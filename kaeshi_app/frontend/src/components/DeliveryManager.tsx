@@ -49,57 +49,73 @@ export default function DeliveryManager() {
     else { const err = await res.json(); alert(err.detail); }
   };
 
-  const inputStyle = { padding: '10px', borderRadius: '4px', border: '1px solid #444', background: '#222', color: 'white', width: '100%', boxSizing: 'border-box' as const };
-  const btnStyle = { border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' as const, minHeight: '44px' };
-
   return (
-    <div className="glass-panel" style={{ minHeight: '60vh' }}>
-      <h2 style={{ color: 'var(--primary-color)' }}>納品管理</h2>
-      <p style={{ color: 'var(--text-secondary)' }}>日々の納品を記録します。納品番号は自動で付与されます。</p>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '0.5rem', marginBottom: '1rem' }}>
-        <input style={inputStyle} type="date" value={deliveryDate} onChange={e => setDeliveryDate(e.target.value)} onKeyDown={e => e.preventDefault()} />
-        <select style={inputStyle} value={destId} onChange={e => setDestId(Number(e.target.value))}>
-          <option value="">納品先を選択...</option>
-          {destinations.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
-        </select>
+    <div style={{ animation: 'fadeIn 0.5s ease' }}>
+      <h2 style={{ fontSize: '1.8rem', fontWeight: 500, marginBottom: '20px' }}>納品トラッカー</h2>
+      
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px', marginBottom: '25px' }}>
+        <div>
+          <label style={{ fontSize: '0.75rem', opacity: 0.7, marginLeft: '8px' }}>納品日</label>
+          <input type="date" value={deliveryDate} onChange={e => setDeliveryDate(e.target.value)} onKeyDown={e => e.preventDefault()} />
+        </div>
+        <div>
+          <label style={{ fontSize: '0.75rem', opacity: 0.7, marginLeft: '8px' }}>納品先</label>
+          <select value={destId} onChange={e => setDestId(Number(e.target.value))}>
+            <option value="">納品先を選択...</option>
+            {destinations.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+          </select>
+        </div>
       </div>
 
-      <h3>納品品目</h3>
+      <h3 style={{ marginBottom: '15px', fontSize: '1.2rem', opacity: 0.9 }}>納品品目</h3>
       {items.map((item, idx) => (
-        <div key={idx} style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', gap: '0.5rem', marginBottom: '0.5rem' }}>
-          <select style={inputStyle} value={item.recipe_id} onChange={e => updateRow(idx, 'recipe_id', Number(e.target.value))}>
+        <div key={idx} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 50px', gap: '10px', marginBottom: '10px' }}>
+          <select value={item.recipe_id} onChange={e => updateRow(idx, 'recipe_id', Number(e.target.value))}>
             <option value="">品名を選択...</option>
             {recipes.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
           </select>
-          <input style={{ ...inputStyle, width: '80px' }} type="number" value={item.quantity} onChange={e => updateRow(idx, 'quantity', Number(e.target.value))} min={1} />
-          <button onClick={() => removeRow(idx)} style={{ ...btnStyle, background: '#ef4444', color: '#fff', padding: '0 10px' }}>🗑️</button>
+          <input type="number" value={item.quantity} onChange={e => updateRow(idx, 'quantity', Number(e.target.value))} min={1} />
+          <span onClick={() => removeRow(idx)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '1.2rem' }}>🗑️</span>
         </div>
       ))}
-      <button onClick={addRow} style={{ ...btnStyle, background: '#333', color: '#fff', padding: '8px 16px', marginBottom: '1rem' }}>＋ 品目追加</button>
-      <br />
-      <button onClick={handleSubmit} style={{ ...btnStyle, background: '#4ade80', color: '#000', padding: '12px 24px', width: '100%' }}>納品を登録する</button>
+      
+      <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+        <button className="secondary" onClick={addRow} style={{ flex: 1 }}>＋ 品目追加</button>
+        <button onClick={handleSubmit} style={{ flex: 2, background: 'white', color: 'var(--bg-secondary)', fontWeight: 'bold' }}>納品を確定する</button>
+      </div>
 
-      <hr style={{ borderColor: '#333', margin: '2rem 0' }} />
+      <div style={{ margin: '40px 0', borderTop: '1px solid var(--glass-border)' }}></div>
 
-      <h3>納品履歴</h3>
+      <h3 style={{ marginBottom: '15px', fontSize: '1.2rem', opacity: 0.9 }}>最新の納品履歴</h3>
       <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
-          <thead><tr style={{ borderBottom: '1px solid #444', color: '#aaa' }}>
-            <th style={{ padding: '8px' }}>番号</th><th style={{ padding: '8px' }}>日付</th><th style={{ padding: '8px' }}>納品先</th><th style={{ padding: '8px' }}>品目</th><th style={{ padding: '8px' }}>操作</th>
-          </tr></thead>
-          <tbody>{deliveries.map((d: any) => (
-            <tr key={d.id} style={{ borderBottom: '1px solid #333' }}>
-              <td style={{ padding: '8px', color: '#4ade80' }}>{d.delivery_number}</td>
-              <td style={{ padding: '8px' }}>{d.delivery_date}</td>
-              <td style={{ padding: '8px' }}>{d.destination_name}</td>
-              <td style={{ padding: '8px' }}>{d.items?.map((i: any) => `${i.recipe_name}×${i.quantity}`).join(', ')}</td>
-              <td style={{ padding: '8px' }}>
-                {d.invoice_id ? <span style={{ color: '#888' }}>請求済</span> :
-                  <button onClick={() => handleDelete(d.id)} style={{ ...btnStyle, background: '#ef4444', color: '#fff', padding: '4px 10px' }}>🗑️</button>}
-              </td>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr style={{ borderBottom: '2px solid var(--glass-border)', textAlign: 'left', color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem' }}>
+              <th style={{ padding: '12px' }}>番号</th>
+              <th style={{ padding: '12px' }}>日付</th>
+              <th style={{ padding: '12px' }}>納品先</th>
+              <th style={{ padding: '12px' }}>内容</th>
+              <th style={{ padding: '12px' }}>操作</th>
             </tr>
-          ))}</tbody>
+          </thead>
+          <tbody>
+            {deliveries.slice(0, 10).map((d: any) => (
+              <tr key={d.id} style={{ borderBottom: '1px solid var(--glass-border)' }}>
+                <td style={{ padding: '12px', color: 'var(--accent-pink)', fontWeight: 600 }}>{d.delivery_number}</td>
+                <td style={{ padding: '12px' }}>{d.delivery_date}</td>
+                <td style={{ padding: '12px' }}>{d.destination_name}</td>
+                <td style={{ padding: '12px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                  {d.items?.map((i: any) => `${i.recipe_name}×${i.quantity}`).join(', ')}
+                </td>
+                <td style={{ padding: '12px' }}>
+                  {d.invoice_id ? 
+                    <span style={{ fontSize: '0.8rem', opacity: 0.5 }}>請求完了</span> :
+                    <span onClick={() => handleDelete(d.id)} style={{ cursor: 'pointer' }}>🗑️</span>
+                  }
+                </td>
+              </tr>
+            ))}
+          </tbody>
         </table>
       </div>
     </div>
