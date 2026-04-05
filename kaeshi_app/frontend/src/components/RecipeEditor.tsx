@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react';
-const API = 'http://127.0.0.1:8001/api';
+const API = `http://${window.location.hostname}:8001/api`;
 
 export default function RecipeEditor() {
   const [recipes, setRecipes] = useState<any[]>([]);
