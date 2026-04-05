@@ -5,209 +5,160 @@ const API = 'http://127.0.0.1:8001/api';
 export default function RecipeEditor() {
   const [recipes, setRecipes] = useState<any[]>([]);
   const [ingredients, setIngredients] = useState<any[]>([]);
-  const [recipeName, setRecipeName] = useState('');
-  const [deliveryBatches, setDeliveryBatches] = useState(1.0);
-  const [batchYield, setBatchYield] = useState(1.0);
-  const [bowlAmount, setBowlAmount] = useState(0);
-  const [bowlUnit, setBowlUnit] = useState('L');
-  const [packingFee, setPackingFee] = useState(0);
-  const [targetPrice, setTargetPrice] = useState(0);
-  const [selectedRecipeId, setSelectedRecipeId] = useState<number | null>(null);
-  const [selectedCost, setSelectedCost] = useState<any>(null);
-  const [recipeItems, setRecipeItems] = useState<any[]>([]);
-  const [itemType, setItemType] = useState('ingredient');
-  const [selectedIngId, setSelectedIngId] = useState<number | ''>('');
-  const [selectedChildId, setSelectedChildId] = useState<number | ''>('');
-  const [itemQty, setItemQty] = useState(0);
+  const [name, setName] = useState('');
+  const [type, setType] = useState('tare'); // tare or soup
+  const [productionBatch, setProductionBatch] = useState<number | ''>(5000);
+  const [servingSize, setServingSize] = useState<number | ''>(100);
+  const [selectedItems, setSelectedItems] = useState<any[]>([]);
+  const [analysis, setAnalysis] = useState<any>(null);
 
-  const fetchData = async () => {
+  useEffect(() => { fetchAll(); }, []);
+
+  const fetchAll = async () => {
     try {
-      const [rr, ir] = await Promise.all([fetch(`${API}/recipes/`), fetch(`${API}/ingredients/`)]);
-      if (rr.ok) setRecipes(await rr.json());
-      if (ir.ok) setIngredients(await ir.json());
+      const [rRes, iRes] = await Promise.all([fetch(`${API}/recipes/`), fetch(`${API}/ingredients/`)]);
+      if (rRes.ok) setRecipes(await rRes.json());
+      if (iRes.ok) setIngredients(await iRes.json());
     } catch (e) { console.error(e); }
   };
-  useEffect(() => { fetchData(); }, []);
 
-  const fetchCostAndItems = async (id: number) => {
-    const [cr, ir] = await Promise.all([fetch(`${API}/recipes/${id}/cost`), fetch(`${API}/recipes/${id}/items`)]);
-    if (cr.ok) setSelectedCost(await cr.json());
-    if (ir.ok) setRecipeItems(await ir.json());
+  const addItem = (id: number, isRecipe: boolean) => {
+    const list = isRecipe ? recipes : ingredients;
+    const item = list.find(x => x.id === id);
+    if (!item) return;
+    setSelectedItems([...selectedItems, { id, name: item.name, is_recipe: isRecipe, amount: 0 }]);
+  };
+
+  const updateItemAmount = (idx: number, val: number) => {
+    const newItems = [...selectedItems];
+    newItems[idx].amount = val;
+    setSelectedItems(newItems);
   };
 
   const handleCreate = async () => {
-    if (!recipeName) return;
-    await fetch(`${API}/recipes/`, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: recipeName, delivery_batches: deliveryBatches, batch_yield: batchYield, bowl_amount: bowlAmount, bowl_unit: bowlUnit, packing_fee: packingFee, target_price: targetPrice })
+    if (!name || !productionBatch || !servingSize || selectedItems.length === 0) return;
+    const res = await fetch(`${API}/recipes/`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name, type, production_batch: Number(productionBatch), serving_size: Number(servingSize),
+        items: selectedItems.map(si => ({ item_id: si.id, is_recipe: si.is_recipe, amount: si.amount }))
+      })
     });
-    setRecipeName(''); setDeliveryBatches(1); setBatchYield(1); setBowlAmount(0); setPackingFee(0); setTargetPrice(0);
-    fetchData();
+    if (res.ok) {
+      setName(''); setSelectedItems([]); fetchAll();
+      const data = await res.json(); fetchAnalysis(data.id);
+    }
   };
 
-  const handleAddItem = async () => {
-    if (!selectedRecipeId || itemQty <= 0) return;
-    await fetch(`${API}/recipes/${selectedRecipeId}/items`, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ingredient_id: itemType === 'ingredient' ? selectedIngId || null : null, child_recipe_id: itemType === 'recipe' ? selectedChildId || null : null, quantity: itemQty })
-    });
-    setItemQty(0);
-    fetchCostAndItems(selectedRecipeId);
-  };
-
-  const handleDeleteItem = async (itemId: number) => {
-    if (!selectedRecipeId) return;
-    await fetch(`${API}/recipes/${selectedRecipeId}/items/${itemId}`, { method: 'DELETE' });
-    fetchCostAndItems(selectedRecipeId);
-  };
-
-  const handleDeleteRecipe = async (id: number) => {
-    if (!confirm('削除しますか？')) return;
-    await fetch(`${API}/recipes/${id}`, { method: 'DELETE' });
-    if (selectedRecipeId === id) { setSelectedRecipeId(null); setSelectedCost(null); setRecipeItems([]); }
-    fetchData();
+  const fetchAnalysis = async (id: number) => {
+    const res = await fetch(`${API}/recipes/${id}/analysis`);
+    if (res.ok) setAnalysis(await res.json());
   };
 
   return (
     <div style={{ animation: 'fadeIn 0.5s ease' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '30px' }}>
         
-        {/* Left: Recipe Creation & Navigation */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <h2 style={{ fontSize: '1.8rem', fontWeight: 500 }}>レシピ設計</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <input placeholder="品名" value={recipeName} onChange={e => setRecipeName(e.target.value)} />
-            <input type="number" placeholder="予定販売価格 (¥)" value={targetPrice || ''} onChange={e => setTargetPrice(Number(e.target.value))} />
-            
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-              <div>
-                <label style={{ fontSize: '0.75rem', opacity: 0.7, marginLeft: '8px' }}>納品回数</label>
-                <input type="number" placeholder="納品回数" value={deliveryBatches || ''} onChange={e => setDeliveryBatches(Number(e.target.value))} />
-              </div>
-              <div>
-                <label style={{ fontSize: '0.75rem', opacity: 0.7, marginLeft: '8px' }}>1回の量</label>
-                <input type="number" placeholder="出来量" value={batchYield || ''} onChange={e => setBatchYield(Number(e.target.value))} />
-              </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px', gap: '10px' }}>
-              <input type="number" placeholder="一杯分" value={bowlAmount || ''} onChange={e => setBowlAmount(Number(e.target.value))} />
-              <select value={bowlUnit} onChange={e => setBowlUnit(e.target.value)}>
-                <option value="L">L</option><option value="ml">ml</option><option value="kg">kg</option><option value="g">g</option>
-              </select>
-            </div>
-            
-            <input type="number" placeholder="梱包料 (¥)" value={packingFee || ''} onChange={e => setPackingFee(Number(e.target.value))} />
-            <button onClick={handleCreate} style={{ background: '#ffffff', color: 'var(--bg-secondary)', fontWeight: 'bold' }}>＋ レシピ作成</button>
+        {/* Left: Recipe Configuration */}
+        <section>
+          <div style={{ marginBottom: '25px' }}>
+            <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '4px' }}>レシピ構成</h2>
+            <p style={{ opacity: 0.6, fontSize: '0.85rem' }}>原材料と「かえし」等の入れ子レシピを自由に組み合わせます。</p>
           </div>
 
-          <h3 style={{ marginTop: '20px', color: 'rgba(255,255,255,0.7)' }}>登録済みレシピ 一覧</h3>
+          <div className="glass-card">
+            <div style={{ display: 'flex', gap: '15px', marginBottom: '20px' }}>
+              <select className="crystal-input" onChange={e => addItem(Number(e.target.value.split(':')[0]), e.target.value.includes('R'))}>
+                <option value="">+ 材料・レシピを追加</option>
+                <optgroup label="原材料">
+                  {ingredients.map(i => <option key={`I${i.id}`} value={`${i.id}:I`}>{i.name}</option>)}
+                </optgroup>
+                <optgroup label="既存レシピ">
+                  {recipes.map(r => <option key={`R${r.id}`} value={`${r.id}:R`}>{r.name}</option>)}
+                </optgroup>
+              </select>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {selectedItems.map((si, idx) => (
+                <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'rgba(255,255,255,0.1)', padding: '12px', borderRadius: '14px' }}>
+                  <div style={{ flex: 1, fontWeight: 600, fontSize: '0.9rem' }}>{si.name} {si.is_recipe ? '🍜' : '📦'}</div>
+                  <input className="crystal-input" style={{ width: '120px' }} type="number" placeholder="量" value={si.amount || ''} onChange={e => updateItemAmount(idx, Number(e.target.value))} />
+                  <span style={{ fontSize: '0.8rem', opacity: 0.6 }}>g/ml</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="glass-card">
+             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '20px' }}>
+               <div>
+                  <label style={{ fontSize: '0.7rem', fontWeight: 800, opacity: 0.5, marginBottom: '5px', display: 'block' }}>レシピ名</label>
+                  <input className="crystal-input" value={name} onChange={e => setName(e.target.value)} placeholder="例：特製醤油かえし" />
+               </div>
+               <div>
+                  <label style={{ fontSize: '0.7rem', fontWeight: 800, opacity: 0.5, marginBottom: '5px', display: 'block' }}>種類</label>
+                  <select className="crystal-input" value={type} onChange={e => setType(e.target.value)}>
+                    <option value="tare">かえし (Tare)</option>
+                    <option value="soup">スープ (Soup)</option>
+                  </select>
+               </div>
+             </div>
+             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+               <div>
+                  <label style={{ fontSize: '0.7rem', fontWeight: 800, opacity: 0.5, marginBottom: '5px', display: 'block' }}>仕込み量 (g/ml)</label>
+                  <input className="crystal-input" type="number" value={productionBatch} onChange={e => setProductionBatch(Number(e.target.value))} />
+               </div>
+               <div>
+                  <label style={{ fontSize: '0.7rem', fontWeight: 800, opacity: 0.5, marginBottom: '5px', display: 'block' }}>一杯あたりの使用量 (g/ml)</label>
+                  <input className="crystal-input" type="number" value={servingSize} onChange={e => setServingSize(Number(e.target.value))} />
+               </div>
+             </div>
+             <button className="crystal-btn" style={{ width: '100%', marginTop: '20px' }} onClick={handleCreate}>計算・保存</button>
+          </div>
+        </section>
+
+        {/* Right: Analysis Panel */}
+        <aside>
+          <div style={{ marginBottom: '25px' }}>
+            <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '4px' }}>計算レポート</h2>
+            <p style={{ opacity: 0.6, fontSize: '0.85rem' }}>最新の原価分析結果を表示します。</p>
+          </div>
+
+          {analysis ? (
+             <div className="glass-card" style={{ background: 'rgba(255,255,255,0.25)', border: '1px solid var(--accent-pink)' }}>
+                <div style={{ fontSize: '0.7rem', fontWeight: 800, opacity: 0.6, marginBottom: '15px' }}>COST ANALYSIS</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                  <div>
+                    <div style={{ fontSize: '0.75rem', opacity: 0.6 }}>一杯あたりの原価</div>
+                    <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--accent-pink)' }}>¥{analysis.cost_per_serving?.toFixed(1)}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '0.75rem', opacity: 0.6 }}>仕込み原価 (Total)</div>
+                    <div style={{ fontSize: '1.2rem', fontWeight: 700 }}>¥{analysis.total_batch_cost?.toLocaleString()}</div>
+                  </div>
+                  <div style={{ borderTop: '1px solid var(--glass-border)', paddingTop: '15px', color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
+                    仕込み量 {analysis.production_batch}g に対して {analysis.yield_percent}% の歩留まり。
+                  </div>
+                </div>
+             </div>
+          ) : (
+            <div className="glass-card" style={{ textAlign: 'center', opacity: 0.5, padding: '60px 20px' }}>
+              <div style={{ fontSize: '3rem', marginBottom: '10px' }}>📊</div>
+              データ未算出
+            </div>
+          )}
+
+          <h3 style={{ marginTop: '30px', marginBottom: '15px', fontSize: '1rem', opacity: 0.7 }}>保存済みレシピ</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {recipes.map(r => (
-              <div key={r.id} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                <div 
-                  onClick={() => { setSelectedRecipeId(r.id); fetchCostAndItems(r.id); }}
-                  className="glass-panel"
-                  style={{ 
-                    flex: 1, 
-                    padding: '15px', 
-                    margin: 0,
-                    cursor: 'pointer',
-                    background: selectedRecipeId === r.id ? 'white' : 'rgba(255,255,255,0.1)',
-                    color: selectedRecipeId === r.id ? 'var(--bg-secondary)' : 'white',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                  }}
-                >
-                  <span style={{ fontWeight: 500 }}>{r.name}</span>
-                  <span style={{ fontSize: '0.8rem', opacity: 0.6 }}>{r.delivery_batches}回分</span>
-                </div>
-                <span onClick={() => handleDeleteRecipe(r.id)} style={{ cursor: 'pointer', opacity: 0.5 }}>🗑️</span>
+              <div key={r.id} onClick={() => fetchAnalysis(r.id)} style={{ padding: '12px 15px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontWeight: 600 }}>{r.name}</span>
+                <span style={{ opacity: 0.5 }}># {r.id}</span>
               </div>
             ))}
           </div>
-        </div>
-
-        {/* Right: Cost Analysis & Item List */}
-        <div>
-          <h2 style={{ fontSize: '1.8rem', fontWeight: 500, marginBottom: '20px' }}>原価分析</h2>
-          {selectedRecipeId ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
-              {selectedCost && (
-                <div className="glass-panel" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid var(--accent-pink)', padding: '25px', boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                    <div>
-                      <span style={{ fontSize: '0.8rem', opacity: 0.6 }}>1杯あたりの原価</span>
-                      <div style={{ fontSize: '2.5rem', fontWeight: 600, color: 'var(--accent-pink)' }}>¥{selectedCost.bowl_cost?.toFixed(2)}</div>
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <span style={{ fontSize: '0.8rem', opacity: 0.6 }}>粗利率</span>
-                      <div style={{ fontSize: '2rem', fontWeight: 500, color: selectedCost.gross_profit_margin >= 30 ? '#B2FFD6' : '#FFC48C' }}>
-                        {selectedCost.gross_profit_margin?.toFixed(1)}%
-                      </div>
-                    </div>
-                    <div style={{ gridColumn: 'span 2', display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--glass-border)', paddingTop: '15px', marginTop: '10px' }}>
-                      <div><span style={{ fontSize: '0.75rem', opacity: 0.5 }}>1回の総原価</span><br />¥{selectedCost.batch_cost?.toLocaleString()}</div>
-                      <div><span style={{ fontSize: '0.75rem', opacity: 0.5 }}>納品原価</span><br />¥{selectedCost.delivery_cost?.toLocaleString()}</div>
-                      <div><span style={{ fontSize: '0.75rem', opacity: 0.5 }}>販売価格</span><br />¥{selectedCost.target_price?.toLocaleString()}</div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Items List */}
-              <div style={{ overflowX: 'auto' }}>
-                <h3 style={{ marginBottom: '15px', fontSize: '1.2rem', opacity: 0.9 }}>構成材料リスト</h3>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead>
-                    <tr style={{ borderBottom: '2px solid var(--glass-border)', textAlign: 'left', color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem' }}>
-                      <th style={{ padding: '10px' }}>名称</th>
-                      <th style={{ padding: '10px' }}>使用量</th>
-                      <th style={{ padding: '10px' }}>操作</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {recipeItems.map(it => (
-                      <tr key={it.id} style={{ borderBottom: '1px solid var(--glass-border)' }}>
-                        <td style={{ padding: '10px' }}>{it.name}</td>
-                        <td style={{ padding: '10px' }}>{it.quantity}{it.unit_type || ''}</td>
-                        <td style={{ padding: '10px' }}><span onClick={() => handleDeleteItem(it.id)} style={{ cursor: 'pointer' }}>🗑️</span></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Add Item Form */}
-              <div className="glass-panel" style={{ background: 'rgba(255,255,255,0.05)', padding: '20px' }}>
-                <h3 style={{ marginBottom: '15px' }}>材料を追加</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
-                  <select value={itemType} onChange={e => setItemType(e.target.value)}>
-                    <option value="ingredient">原材料</option><option value="recipe">別レシピ</option>
-                  </select>
-                  {itemType === 'ingredient' ? (
-                    <select value={selectedIngId} onChange={e => setSelectedIngId(Number(e.target.value))}>
-                      <option value="">選択...</option>
-                      {ingredients.map(i => <option key={i.id} value={i.id}>{i.name} (¥{i.unit_price?.toFixed(1)}/{i.unit_type})</option>)}
-                    </select>
-                  ) : (
-                    <select value={selectedChildId} onChange={e => setSelectedChildId(Number(e.target.value))}>
-                      <option value="">選択...</option>
-                      {recipes.filter(r => r.id !== selectedRecipeId).map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
-                    </select>
-                  )}
-                </div>
-                <div style={{ display: 'flex', gap: '10px' }}>
-                  <input type="number" placeholder="使用量" value={itemQty || ''} onChange={e => setItemQty(Number(e.target.value))} style={{ flex: 1 }} />
-                  <button onClick={handleAddItem} style={{ background: '#ffffff', color: 'var(--bg-secondary)' }}>追加</button>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="glass-panel" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '300px', borderStyle: 'dashed', background: 'transparent' }}>
-              <p style={{ color: 'rgba(255,255,255,0.4)' }}>左のリストからレシピを選んで解析を開始</p>
-            </div>
-          )}
-        </div>
+        </aside>
       </div>
     </div>
   );

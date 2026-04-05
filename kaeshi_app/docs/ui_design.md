@@ -1,70 +1,31 @@
-# かえし等原価管理Webアプリ UIデザイン・仕様書 (Lavender Glassmorphism Edition)
+# UI/UX デザイン仕様書 (V3: Lavender Crystal Intelligent Dashboard)
 
-ユーザーから提供されたプレミアムなデザインイメージに基づき、ラベンダーカラーとグラスモーフィズム（すりガラス）を融合させた、モダンで洗練されたUIを定義します。
+## 1. デザインコンセプト
+「Kaeshi Cost Intelligence」を体現する、知的で透明感のあるダッシュボードデザイン。
+単なる「管理画面」を「美しく使いやすい道具」へと昇華させる。
 
-## 🎨 デザインコンセプト: "Lavender Crystal"
-透明感のあるラベンダーカラー、柔らかな曲線、そして奥行きを感じさせるグラスモーフィズムを組み合わせた「美しく、使いやすい」インターフェースを目指します。
+## 2. カラーパレット
+- **Main Background**: `linear-gradient(135deg, #a5aeff 0%, #7d84ff 100%)` (鮮やかで深みのあるラベンダー)
+- **Deep Text**: `#1e1b4b` (濃紺) - 読みやすさと高級感の核。
+- **Glass Panel (Level 1)**: `rgba(255, 255, 255, 0.45)` / `blur(20px)` (メインの広域エリア)
+- **Glass Card (Level 2)**: `rgba(255, 255, 255, 0.3)` / `blur(10px)` (中のパーツ単位)
+- **Accent Pink**: `#ff608c` (スライダー、重要な強調ポイント)
+- **Border**: `rgba(255, 255, 255, 0.4)` (鋭く細い光り)
 
-### 1. カラーパレット (Color Palette)
-画像イメージに基づいた、調和の取れたラベンダー・バイオレットトーンを採用します。
+## 3. タイポグラフィ
+- **大文字・見出し**: `Syne`, sans-serif (700) - 幾何学的で強い個性を出す。
+- **メインUI/本文**: `Plus Jakarta Sans`, "Zen Kaku Gothic New", "Noto Sans JP", sans-serif (400-600) - モダンで知的。
+- **階層**:
+  - Hero Title: 2.2rem
+  - Section Title: 1.4rem
+  - Body / Label: 0.9rem
 
-| カテゴリ | 色名 / コード | 用途 |
-|---|---|---|
-| **Primary Background** | `#9BA1FF` (Soft Lavender) | メイン背景（グラデーションの基点） |
-| **Secondary Background** | `#7D84FF` (Deep Lavender) | 背景グラデーションの深み、アクセント |
-| **Glass Surface** | `rgba(255, 255, 255, 0.4)` | メインパネル（すりガラス） |
-| **Glass Border** | `rgba(255, 255, 255, 0.2)` | パネルの境界線 |
-| **Accent (Pink)** | `#FF8E9C` (Soft Pink) | スライダー、ボタンなどの強調要素 |
-| **Text Primary** | `#FFFFFF` | タイトル、重要なテキスト |
-| **Text Secondary** | `rgba(255, 255, 255, 0.8)` | 本文、説明文 |
+## 4. コンポーネント定義
+- **Nav Rail**: 画面左側に64px幅で固定。アクティブな要素は「光りの筋」で表現。
+- **Glass Card**: `border-radius: 20px`, `box-shadow: 0 10px 30px rgba(0,0,0,0.05)`
+- **Crystal Input**: 透過背景、フォーカス時にアクセントカラーで内側から光るようなエフェクト。
+- **Modern Table**: 枠線を最小限にし、背景の色味の差と余白だけで情報の境界を表現。
 
-### 2. タイポグラフィ (Typography)
-スタイリッシュでプレミアムな印象を与えるサンセリフ体を採用します。
-- **Primary Font**: 'Outfit', sans-serif (Google Fonts)
-- **Secondary Font**: 'Inter', sans-serif
-- **Styling**: `font-weight: 300` (Light) や `500` (Medium) を使い分け、上品な印象を演出。
-
-### 3. スタイリング要素 (Design Features)
-- **Glassmorphism**: 
-  - `backdrop-filter: blur(20px);`
-  - `box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);`
-- **Component Roundedness**: 
-  - メインパネル: `border-radius: 40px;` (非常に丸い角)
-  - ボタン・アイコン: `border-radius: 50%;` または 大きめの `border-radius`
-- **Gradients**: 
-  - 背景には、ラベンダーから淡いブルー、バイオレットへの流れるようなグラデーションを採用。
-
-## 🖼️ 画面構成 (Layout System)
-
-### 共通レイアウト
-背景は全面ラベンダーのグラデーションとし、中央に巨大なグラスモーフィズム・パネルを配置します。
-
-#### サイドメニュー (Left Floating Icons)
-画像にあるように、画面左端に円形の透過アイコン（原材料管理、レシピ、請求書など）を配置。
-
-#### メインパネル (Main Content Area)
-- **左側**: 大きなテキスト (`Kaeshi Costs` など) と、丸みを帯びた主ボタン。
-- **右側**: 料理（ラーメンやタレ）の美しさを引き立てる、角丸の画像またはグラフエリア。
-
-#### スライダー (Right Slider)
-画面右端には垂直なスライダー（ズームや調整用）を配置し、ピンク色のアクセントを加える。
-
-## 🧩 主要コンポーネント
-
-### 1. グラス・ダッシュボード (Glass Dashboard)
-- **Header**: 文字列は白で統一。設定アイコンなどを配置。
-- **Nav**: 背景に馴染むよう、極力ボーダーを排除。
-
-### 2. プレミアム・ボタン (Premium Button)
-- 背景は白、文字はパープル。
-- ホバー時にわずかに浮き上がるようなアニメーション。
-
-### 3. モーダル・入力フォーム
-- すりガラスの上に、さらに透過度の低いホワイトを重ね、レイヤー感を出す。
-
-## ✨ インタラクション・アニメーション (Micro-interactions)
-- **Hover**: グラスパネルの透明度がわずかに変化。
-- **Transition**: 画面遷移はフェードイン・フェードアウトで、ゆったりとした時間を流す。
-
----
-このデザイン仕様に基づき、プレミアムな「かえし原価管理アプリ」を構築します。
+## 5. レスポン設計
+- **Desktop (1024px+)**: フル機能のダッシュボード、左サイドナビ。
+- **Mobile (< 860px)**: ボトムナビゲーションへ移行、カードをフル幅に。

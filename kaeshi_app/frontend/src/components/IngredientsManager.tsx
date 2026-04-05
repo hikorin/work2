@@ -1,133 +1,97 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState, useEffect } from 'react';
-
+import { useEffect, useState } from 'react';
 const API = 'http://127.0.0.1:8001/api';
 
 export default function IngredientsManager() {
   const [ingredients, setIngredients] = useState<any[]>([]);
-  const [destinations, setDestinations] = useState<any[]>([]);
   const [name, setName] = useState('');
-  const [price, setPrice] = useState<number>(0);
-  const [qty, setQty] = useState<number>(0);
-  const [unitType, setUnitType] = useState('g');
-  const [destName, setDestName] = useState('');
-  const [destAddr, setDestAddr] = useState('');
-  const [editId, setEditId] = useState<number | null>(null);
-  const [editDestId, setEditDestId] = useState<number | null>(null);
+  const [price, setPrice] = useState<number | ''>('');
+  const [amount, setAmount] = useState<number | ''>('');
+  const [unit, setUnit] = useState('g');
 
-  const fetchAll = async () => {
+  const fetchIngredients = async () => {
     try {
-      const [iRes, dRes] = await Promise.all([fetch(`${API}/ingredients/`), fetch(`${API}/destinations/`)]);
-      if (iRes.ok) setIngredients(await iRes.json());
-      if (dRes.ok) setDestinations(await dRes.json());
-    } catch (e) { console.error(e); }
-  };
-  useEffect(() => { fetchAll(); }, []);
-
-  const handleSaveIngredient = async () => {
-    if (!name || price <= 0 || qty <= 0) return;
-    const body = { name, price, quantity: qty, unit_type: unitType };
-    const url = editId ? `${API}/ingredients/${editId}` : `${API}/ingredients/`;
-    const method = editId ? 'PUT' : 'POST';
-    await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-    setName(''); setPrice(0); setQty(0); setEditId(null);
-    fetchAll();
+      const res = await fetch(`${API}/ingredients/`);
+      if (res.ok) setIngredients(await res.json());
+    } catch (e) {
+      console.error('Failed to fetch ingredients:', e);
+    }
   };
 
-  const handleDeleteIngredient = async (id: number) => {
-    if (!confirm('この材料を削除しますか？')) return;
-    await fetch(`${API}/ingredients/${id}`, { method: 'DELETE' });
-    fetchAll();
+  useEffect(() => { fetchIngredients(); }, []);
+
+  const handleAdd = async () => {
+    if (!name || price === '' || amount === '') return;
+    const res = await fetch(`${API}/ingredients/`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, unit_price: Number(price), unit_amount: Number(amount), unit })
+    });
+    if (res.ok) {
+      setName(''); setPrice(''); setAmount(''); fetchIngredients();
+    }
   };
 
-  const handleEditIngredient = (ing: any) => {
-    setEditId(ing.id); setName(ing.name); setPrice(ing.price); setQty(ing.quantity); setUnitType(ing.unit_type);
-  };
-
-  const handleSaveDest = async () => {
-    if (!destName) return;
-    const body = { name: destName, address: destAddr };
-    const url = editDestId ? `${API}/destinations/${editDestId}` : `${API}/destinations/`;
-    const method = editDestId ? 'PUT' : 'POST';
-    await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-    setDestName(''); setDestAddr(''); setEditDestId(null);
-    fetchAll();
-  };
-
-  const handleDeleteDest = async (id: number) => {
-    if (!confirm('この納入先を削除しますか？')) return;
-    await fetch(`${API}/destinations/${id}`, { method: 'DELETE' });
-    fetchAll();
+  const handleDelete = async (id: number) => {
+    if (!confirm('削除してよろしいですか？')) return;
+    const res = await fetch(`${API}/ingredients/${id}`, { method: 'DELETE' });
+    if (res.ok) fetchIngredients();
   };
 
   return (
     <div style={{ animation: 'fadeIn 0.5s ease' }}>
-      <h2 style={{ fontSize: '1.8rem', fontWeight: 500 }}>原材料マスター管理</h2>
-      <p style={{ color: 'var(--text-secondary)', marginBottom: '20px' }}>材料の仕入れ価格と量を登録してください。</p>
-
-      {/* Input Group */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '10px', marginBottom: '30px' }}>
-        <input type="text" placeholder="材料名" value={name} onChange={e => setName(e.target.value)} />
-        <input type="number" placeholder="価格(税込)" value={price || ''} onChange={e => setPrice(Number(e.target.value))} />
-        <input type="number" placeholder="量" value={qty || ''} onChange={e => setQty(Number(e.target.value))} />
-        <select value={unitType} onChange={e => setUnitType(e.target.value)}>
-          <option value="g">g</option><option value="kg">kg</option><option value="ml">ml</option><option value="L">L</option><option value="本">本</option>
-        </select>
-        <button onClick={handleSaveIngredient} style={{ background: '#ffffff', color: 'var(--bg-secondary)', fontWeight: 'bold' }}>
-          {editId ? '更新' : '+ 追加'}
-        </button>
+      <div style={{ marginBottom: '30px' }}>
+        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '8px', color: 'var(--text-primary)' }}>原材料マスター登録</h2>
+        <p style={{ opacity: 0.6, fontSize: '0.85rem' }}>材料の仕入れ価格と基準量を入力して、データベースを構築します。</p>
       </div>
 
-      <h3 style={{ marginBottom: '15px', color: 'rgba(255,255,255,0.9)' }}>仕入原材料一覧</h3>
+      <div className="glass-card" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '15px', alignItems: 'flex-end', marginBottom: '40px' }}>
+        <div>
+          <label style={{ fontSize: '0.7rem', fontWeight: 800, opacity: 0.5, marginLeft: '8px', marginBottom: '4px', display: 'block' }}>品名</label>
+          <input className="crystal-input" type="text" value={name} onChange={e => setName(e.target.value)} placeholder="例：醤油" />
+        </div>
+        <div>
+          <label style={{ fontSize: '0.7rem', fontWeight: 800, opacity: 0.5, marginLeft: '8px', marginBottom: '4px', display: 'block' }}>価格(税込)</label>
+          <input className="crystal-input" type="number" value={price} onChange={e => setPrice(e.target.value === '' ? '' : Number(e.target.value))} placeholder="¥" />
+        </div>
+        <div>
+          <label style={{ fontSize: '0.7rem', fontWeight: 800, opacity: 0.5, marginLeft: '8px', marginBottom: '4px', display: 'block' }}>量</label>
+          <input className="crystal-input" type="number" value={amount} onChange={e => setAmount(e.target.value === '' ? '' : Number(e.target.value))} />
+        </div>
+        <div>
+          <label style={{ fontSize: '0.7rem', fontWeight: 800, opacity: 0.5, marginLeft: '8px', marginBottom: '4px', display: 'block' }}>単位</label>
+          <select className="crystal-input" value={unit} onChange={e => setUnit(e.target.value)}>
+            <option value="g">g (グラム)</option>
+            <option value="ml">ml (ミリリットル)</option>
+            <option value="個">個 (個数)</option>
+          </select>
+        </div>
+        <div style={{ paddingBottom: '3px' }}>
+          <button className="crystal-btn" onClick={handleAdd} style={{ width: '100%', height: '48px' }}>+ 追加</button>
+        </div>
+      </div>
+
       <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <table style={{ width: '100%', minWidth: '600px' }}>
           <thead>
-            <tr style={{ borderBottom: '2px solid var(--glass-border)', textAlign: 'left', color: 'rgba(255,255,255,0.6)' }}>
-              <th style={{ padding: '12px' }}>材料名</th>
-              <th style={{ padding: '12px' }}>仕入単価</th>
-              <th style={{ padding: '12px' }}>仕入量</th>
-              <th style={{ padding: '12px' }}>単価(自動)</th>
-              <th style={{ padding: '12px' }}>操作</th>
+            <tr>
+              <th style={{ width: '60px' }}>ID</th>
+              <th>材料名</th>
+              <th style={{ textAlign: 'right' }}>単価設定</th>
+              <th style={{ textAlign: 'right' }}>操作</th>
             </tr>
           </thead>
           <tbody>
-            {ingredients.map(i => (
-              <tr key={i.id} style={{ borderBottom: '1px solid var(--glass-border)', transition: 'background 0.2s' }}>
-                <td style={{ padding: '12px' }}>{i.name}</td>
-                <td style={{ padding: '12px' }}>¥{i.price?.toLocaleString()}</td>
-                <td style={{ padding: '12px' }}>{i.quantity}{i.unit_type}</td>
-                <td style={{ padding: '12px', color: '#B2FFD6', fontWeight: 500 }}>¥{i.unit_price?.toFixed(2)}</td>
-                <td style={{ padding: '12px' }}>
-                  <span onClick={() => handleEditIngredient(i)} style={{ cursor: 'pointer', marginRight: '15px' }}>✏️</span>
-                  <span onClick={() => handleDeleteIngredient(i.id)} style={{ cursor: 'pointer' }}>🗑️</span>
+            {ingredients.map(ing => (
+              <tr key={ing.id}>
+                <td style={{ opacity: 0.4, fontSize: '0.8rem' }}>#{ing.id}</td>
+                <td style={{ fontWeight: 600 }}>{ing.name}</td>
+                <td style={{ textAlign: 'right', fontWeight: 500, color: 'var(--accent-pink)' }}>
+                  ¥{ing.unit_price?.toLocaleString()} / {ing.unit_amount}{ing.unit}
                 </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <div style={{ margin: '40px 0', borderTop: '1px solid var(--glass-border)' }}></div>
-
-      <h2 style={{ fontSize: '1.8rem', fontWeight: 500 }}>納入先マスター</h2>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px', marginTop: '20px' }}>
-        <input type="text" placeholder="店舗名" value={destName} onChange={e => setDestName(e.target.value)} />
-        <input type="text" placeholder="住所" value={destAddr} onChange={e => setDestAddr(e.target.value)} />
-        <button onClick={handleSaveDest} style={{ background: '#ffffff', color: 'var(--bg-secondary)', fontWeight: 'bold' }}>
-          {editDestId ? '更新' : '+ 登録'}
-        </button>
-      </div>
-
-      <div style={{ overflowX: 'auto', marginTop: '20px' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <tbody>
-            {destinations.map(d => (
-              <tr key={d.id} style={{ borderBottom: '1px solid var(--glass-border)' }}>
-                <td style={{ padding: '12px', fontWeight: 500 }}>{d.name}</td>
-                <td style={{ padding: '12px', color: 'var(--text-secondary)' }}>{d.address}</td>
-                <td style={{ padding: '12px', textAlign: 'right' }}>
-                  <span onClick={() => { setEditDestId(d.id); setDestName(d.name); setDestAddr(d.address); }} style={{ cursor: 'pointer', marginRight: '15px' }}>✏️</span>
-                  <span onClick={() => handleDeleteDest(d.id)} style={{ cursor: 'pointer' }}>🗑️</span>
+                <td style={{ textAlign: 'right' }}>
+                  <span onClick={() => handleDelete(ing.id)} style={{ cursor: 'pointer', opacity: 0.4, fontSize: '0.8rem', padding: '10px' }}>
+                    削除 🗑️
+                  </span>
                 </td>
               </tr>
             ))}
