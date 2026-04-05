@@ -1,12 +1,12 @@
 :root {
-  --bg-primary: #9ba1ff;
-  --bg-secondary: #7d84ff;
-  --glass-bg: rgba(255, 255, 255, 0.3);
-  --glass-border: rgba(255, 255, 255, 0.2);
+  --bg-primary: #8a91ff; /* Slightly deeper lavender for contrast */
+  --bg-secondary: #6c75ff; /* Deeper for text readability */
+  --glass-bg: rgba(255, 255, 255, 0.35); /* Increased opacity */
+  --glass-border: rgba(255, 255, 255, 0.3);
   --accent-pink: #ff8e9c;
   --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.8);
-  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+  --text-secondary: rgba(255, 255, 255, 0.95); /* More solid */
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.25);
 }
 
 * {
@@ -27,6 +27,7 @@ body {
   justify-content: center;
   align-items: center;
   overflow-x: hidden;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); /* Subtle shadow global text pop */
 }
 
 #root {
@@ -39,8 +40,8 @@ body {
   max-width: 1200px;
   min-height: 90vh;
   background: var(--glass-bg);
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
+  backdrop-filter: blur(35px); /* Stronger blur for better separation */
+  -webkit-backdrop-filter: blur(35px);
   border: 1px solid var(--glass-border);
   border-radius: 40px;
   padding: 2.5rem;
@@ -59,9 +60,9 @@ body {
 }
 
 .glass-panel {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.2); /* More contrast in panels */
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
   border: 1px solid var(--glass-border);
   border-radius: 24px;
   padding: 24px;
@@ -71,21 +72,22 @@ body {
 
 .glass-panel:hover {
   transform: translateY(-5px);
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.25);
 }
 
 h1.hero-title {
   font-size: 3.5rem;
   line-height: 1.1;
   margin-bottom: 1rem;
+  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* Stronger pop for big title */
 }
 
 /* 🎨 Layout Responsiveness */
 @media (max-width: 860px) {
   .glass-container {
     padding: 1.5rem;
-    border-radius: 20px;
-    margin-bottom: 70px; /* Space for bottom nav */
+    border-radius: 24px;
+    margin-bottom: 80px;
   }
 
   .main-layout {
@@ -104,23 +106,24 @@ h1.hero-title {
     bottom: 0px;
     left: 0;
     right: 0;
-    background: rgba(125, 132, 255, 0.8);
+    background: rgba(108, 117, 255, 0.9); /* More solid on mobile */
     backdrop-filter: blur(20px);
-    padding: 10px 0 !important;
+    padding: 12px 10px !important;
     z-index: 2000;
     border-radius: 20px 20px 0 0;
-    box-shadow: 0 -10px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.15);
   }
 
   .side-nav-item {
-    width: 50px !important;
-    height: 50px !important;
-    font-size: 1.4rem !important;
+    width: 54px !important;
+    height: 54px !important;
+    font-size: 1.5rem !important;
   }
 
   .hero-p {
-    font-size: 0.95rem;
+    font-size: 1rem;
     margin-bottom: 20px;
+    color: #ffffff; /* Brighter for mobile */
   }
 
   .decorative-slider {
@@ -131,29 +134,39 @@ h1.hero-title {
 /* 🧱 Components */
 button {
   background: white;
-  color: var(--bg-secondary);
+  color: #5a64ff; /* Stronger color for readability */
   border: none;
   padding: 12px 28px;
   border-radius: 30px;
   font-family: 'Outfit', sans-serif;
-  font-weight: 500;
+  font-weight: 600; /* Bolder button text */
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
 button:hover {
-  transform: scale(1.05);
+  transform: translateY(-2px) scale(1.03);
 }
 
 input, select {
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 12px;
-  padding: 10px 15px;
+  padding: 12px 16px;
   color: white;
   outline: none;
-  font-size: 16px; /* Prevents auto-zoom on iOS */
+  font-size: 16px;
+  font-weight: 500;
+}
+
+input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+input:focus {
+  background: rgba(255, 255, 255, 0.35);
+  border-color: #ffffff;
 }
 
 @keyframes fadeIn {
@@ -161,5 +174,16 @@ input, select {
   to { opacity: 1; transform: translateY(0); }
 }
 
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 10px; }
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.4); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.6); }
+
+/* Table Readability Tweaks */
+table th {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 1); /* Full white for headers */
+}
+
+table td {
+  color: rgba(255, 255, 255, 0.95);
+}
