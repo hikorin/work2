@@ -31,26 +31,31 @@ body {
 
 #root {
   width: 100%;
-  display: flex;
-  justify-content: center;
-  padding: 20px;
+  padding: 10px;
 }
 
 .glass-container {
   width: 100%;
   max-width: 1200px;
-  min-height: 85vh;
+  min-height: 90vh;
   background: var(--glass-bg);
   backdrop-filter: blur(25px);
   -webkit-backdrop-filter: blur(25px);
   border: 1px solid var(--glass-border);
   border-radius: 40px;
-  padding: 40px;
+  padding: 2.5rem;
   box-shadow: var(--glass-shadow);
   display: flex;
   flex-direction: column;
   position: relative;
   animation: fadeIn 0.8s ease-out;
+}
+
+.main-layout {
+  display: flex;
+  flex: 1;
+  gap: 40px;
+  width: 100%;
 }
 
 .glass-panel {
@@ -69,12 +74,61 @@ body {
   background: rgba(255, 255, 255, 0.2);
 }
 
-h1, h2, h3 {
-  font-family: 'Outfit', sans-serif;
-  letter-spacing: -0.02em;
+h1.hero-title {
+  font-size: 3.5rem;
+  line-height: 1.1;
   margin-bottom: 1rem;
 }
 
+/* 🎨 Layout Responsiveness */
+@media (max-width: 860px) {
+  .glass-container {
+    padding: 1.5rem;
+    border-radius: 20px;
+    margin-bottom: 70px; /* Space for bottom nav */
+  }
+
+  .main-layout {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  h1.hero-title {
+    font-size: 2.2rem;
+  }
+
+  .side-nav {
+    flex-direction: row !important;
+    justify-content: space-around !important;
+    position: fixed;
+    bottom: 0px;
+    left: 0;
+    right: 0;
+    background: rgba(125, 132, 255, 0.8);
+    backdrop-filter: blur(20px);
+    padding: 10px 0 !important;
+    z-index: 2000;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -10px 20px rgba(0,0,0,0.1);
+  }
+
+  .side-nav-item {
+    width: 50px !important;
+    height: 50px !important;
+    font-size: 1.4rem !important;
+  }
+
+  .hero-p {
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+  }
+
+  .decorative-slider {
+    display: none !important;
+  }
+}
+
+/* 🧱 Components */
 button {
   background: white;
   color: var(--bg-secondary);
@@ -90,13 +144,6 @@ button {
 
 button:hover {
   transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-}
-
-button.secondary {
-  background: transparent;
-  border: 1px solid white;
-  color: white;
 }
 
 input, select {
@@ -106,12 +153,7 @@ input, select {
   padding: 10px 15px;
   color: white;
   outline: none;
-  transition: all 0.3s ease;
-}
-
-input:focus {
-  background: rgba(255, 255, 255, 0.3);
-  border-color: white;
+  font-size: 16px; /* Prevents auto-zoom on iOS */
 }
 
 @keyframes fadeIn {
@@ -119,17 +161,5 @@ input:focus {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 10px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.5);
-}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 10px; }
