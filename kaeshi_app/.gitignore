@@ -1,0 +1,17 @@
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Development tools
+node_modules/
+dist/
+build/
+.vscode/
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
