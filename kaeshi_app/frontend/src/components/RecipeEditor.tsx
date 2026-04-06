@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react';
-const API = 'http://100.98.193.61:8000/api';
+const API = 'http://100.98.193.61:8080/api';
 
 export default function RecipeEditor() {
   const [recipes, setRecipes] = useState<any[]>([]);
@@ -66,22 +66,23 @@ export default function RecipeEditor() {
     fetchData();
   };
 
-  const inp = { padding: '8px', background: '#222', color: '#fff', border: '1px solid #555', borderRadius: '4px', width: '100%', boxSizing: 'border-box' as const };
+  const inp = { padding: '8px', background: 'transparent', color: 'var(--text-primary)', border: 'none', borderBottom: '1px solid var(--outline-variant)', borderRadius: '0', width: '100%', boxSizing: 'border-box' as const, fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300 as const, fontSize: '0.875rem', outline: 'none', transition: 'border-color 0.2s' };
 
   return (
     <div className="glass-panel" style={{ minHeight: '80vh' }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
         {/* Left */}
         <div>
-          <h2 style={{ color: 'var(--primary-color)' }}>レシピ登録</h2>
+          <h2 style={{ color: 'var(--text-primary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 100, fontSize: '1.4rem', letterSpacing: '-0.02em' }}>レシピ登録</h2>
+          <p style={{ color: 'var(--text-secondary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase' as const, marginTop: '-0.5rem' }}>Recipe Registration</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '1.5rem' }}>
             <input style={inp} placeholder="品名" value={recipeName} onChange={e => setRecipeName(e.target.value)} />
             <input style={inp} type="number" step="any" placeholder="販売価格" value={targetPrice || ''} onChange={e => setTargetPrice(Number(e.target.value))} />
-            <label style={{ color: '#aaa', fontSize: '0.8rem', marginTop: '4px' }}>納品 = 何回作成分か</label>
+            <label style={{ color: 'var(--text-secondary)', fontSize: '0.7rem', marginTop: '4px', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300 }}>納品 = 何回作成分か</label>
             <input style={inp} type="number" step="any" placeholder="何回分 (例: 3)" value={deliveryBatches || ''} onChange={e => setDeliveryBatches(Number(e.target.value))} />
-            <label style={{ color: '#aaa', fontSize: '0.8rem', marginTop: '4px' }}>1回の出来上がり量</label>
+            <label style={{ color: 'var(--text-secondary)', fontSize: '0.7rem', marginTop: '4px', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300 }}>1回の出来上がり量</label>
             <input style={inp} type="number" step="any" placeholder="出来上がり量 (例: 2.0)" value={batchYield || ''} onChange={e => setBatchYield(Number(e.target.value))} />
-            <label style={{ color: '#aaa', fontSize: '0.8rem', marginTop: '4px' }}>ラーメン一杯の使用量</label>
+            <label style={{ color: 'var(--text-secondary)', fontSize: '0.7rem', marginTop: '4px', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300 }}>ラーメン一杯の使用量</label>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px', gap: '6px' }}>
               <input style={inp} type="number" step="any" placeholder="一杯の量 (例: 0.06)" value={bowlAmount || ''} onChange={e => setBowlAmount(Number(e.target.value))} />
               <select style={inp} value={bowlUnit} onChange={e => setBowlUnit(e.target.value)}>
@@ -89,33 +90,34 @@ export default function RecipeEditor() {
               </select>
             </div>
             <input style={inp} type="number" step="any" placeholder="梱包料" value={packingFee || ''} onChange={e => setPackingFee(Number(e.target.value))} />
-            <button onClick={handleCreate} style={{ background: '#4ade80', color: '#000', padding: '10px', fontWeight: 'bold', border: 'none', borderRadius: '4px', cursor: 'pointer', minHeight: '44px' }}>＋ レシピ作成</button>
+            <button onClick={handleCreate} style={{ background: 'var(--primary-color)', color: 'var(--on-primary)', padding: '10px', fontWeight: 300, border: 'none', borderRadius: '2px', cursor: 'pointer', minHeight: '44px', fontFamily: "'Noto Sans JP', sans-serif", fontSize: '0.75rem', letterSpacing: '0.08em', transition: 'opacity 0.2s' }}>＋ レシピ作成</button>
           </div>
-          <h3 style={{ color: '#aaa' }}>レシピ一覧</h3>
+          <h3 style={{ fontSize: '0.65rem', fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: '0.12em', textTransform: 'uppercase' as const }}>レシピ一覧</h3>
           {recipes.map(r => (
             <div key={r.id} style={{ display: 'flex', gap: '4px', marginBottom: '6px' }}>
-              <button onClick={() => { setSelectedRecipeId(r.id); fetchCostAndItems(r.id); }} style={{ flex: 1, textAlign: 'left', padding: '10px', background: selectedRecipeId === r.id ? 'rgba(74,222,128,0.2)' : '#222', border: selectedRecipeId === r.id ? '1px solid #4ade80' : '1px solid #444', color: '#fff', borderRadius: '4px', cursor: 'pointer', minHeight: '44px' }}>
-                {r.name} <span style={{ color: '#888', fontSize: '0.75rem' }}>({r.delivery_batches}回分)</span>
+              <button onClick={() => { setSelectedRecipeId(r.id); fetchCostAndItems(r.id); }} style={{ flex: 1, textAlign: 'left', padding: '10px', background: selectedRecipeId === r.id ? 'var(--primary-container)' : 'var(--surface-container-low)', border: selectedRecipeId === r.id ? '1px solid var(--primary-color)' : '1px solid rgba(169,180,185,0.15)', color: 'var(--text-primary)', borderRadius: '2px', cursor: 'pointer', minHeight: '44px', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.875rem', transition: 'all 0.15s' }}>
+                {r.name} <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem' }}>({r.delivery_batches}回分)</span>
               </button>
-              <button onClick={() => handleDeleteRecipe(r.id)} style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', padding: '0 10px', cursor: 'pointer', minHeight: '44px' }}>🗑️</button>
+              <button onClick={() => handleDeleteRecipe(r.id)} style={{ background: 'transparent', color: 'var(--error)', border: '1px solid rgba(169,180,185,0.15)', borderRadius: '2px', padding: '0 10px', cursor: 'pointer', minHeight: '44px', transition: 'opacity 0.2s' }}><span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>delete</span></button>
             </div>
           ))}
         </div>
 
         {/* Right */}
         <div>
-          <h2 style={{ color: 'var(--primary-color)' }}>原価計算</h2>
+          <h2 style={{ color: 'var(--text-primary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 100, fontSize: '1.4rem', letterSpacing: '-0.02em' }}>原価計算</h2>
+          <p style={{ color: 'var(--text-secondary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase' as const, marginTop: '-0.5rem' }}>Cost Analysis</p>
           {selectedRecipeId ? (<>
             {selectedCost && (
-              <div style={{ background: 'rgba(255,82,82,0.1)', border: '1px solid #ff5252', padding: '14px', borderRadius: '8px', marginBottom: '1.5rem' }}>
+              <div style={{ background: 'var(--primary-container)', border: '1px solid rgba(86,94,116,0.15)', padding: '14px', borderRadius: '2px', marginBottom: '1.5rem' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                  <div><span style={{ color: '#aaa', fontSize: '0.75rem' }}>1回の原価</span><br />¥{selectedCost.batch_cost?.toFixed(0)}</div>
-                  <div><span style={{ color: '#aaa', fontSize: '0.75rem' }}>1杯の原価</span><br /><span style={{ color: '#ff8a80', fontSize: '1.3rem', fontWeight: 'bold' }}>¥{selectedCost.bowl_cost?.toFixed(2)}</span></div>
-                  <div><span style={{ color: '#aaa', fontSize: '0.75rem' }}>納品原価(梱包込)</span><br />¥{selectedCost.delivery_cost?.toFixed(0)}</div>
-                  <div><span style={{ color: '#aaa', fontSize: '0.75rem' }}>販売価格</span><br />¥{selectedCost.target_price?.toFixed(0)}</div>
-                  <div style={{ gridColumn: 'span 2', borderTop: '1px dashed #555', paddingTop: '8px' }}>
-                    <span style={{ color: '#aaa' }}>粗利</span>
-                    <p style={{ fontSize: '1.4rem', fontWeight: 'bold', margin: '4px 0', color: selectedCost.gross_profit >= 0 ? '#4ade80' : '#ff5252' }}>
+                  <div><span style={{ color: 'var(--text-secondary)', fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' as const }}>1回の原価</span><br /><span className="manrope-numbers" style={{ fontWeight: 300 }}>¥{selectedCost.batch_cost?.toFixed(0)}</span></div>
+                  <div><span style={{ color: 'var(--text-secondary)', fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' as const }}>1杯の原価</span><br /><span className="manrope-numbers" style={{ color: 'var(--primary-dim)', fontSize: '1.3rem', fontWeight: 400 }}>¥{selectedCost.bowl_cost?.toFixed(2)}</span></div>
+                  <div><span style={{ color: 'var(--text-secondary)', fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' as const }}>納品原価(梱包込)</span><br /><span className="manrope-numbers" style={{ fontWeight: 300 }}>¥{selectedCost.delivery_cost?.toFixed(0)}</span></div>
+                  <div><span style={{ color: 'var(--text-secondary)', fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' as const }}>販売価格</span><br /><span className="manrope-numbers" style={{ fontWeight: 300 }}>¥{selectedCost.target_price?.toFixed(0)}</span></div>
+                  <div style={{ gridColumn: 'span 2', borderTop: '1px solid rgba(86,94,116,0.12)', paddingTop: '8px' }}>
+                    <span style={{ color: 'var(--text-secondary)', fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' as const }}>粗利</span>
+                    <p className="manrope-numbers" style={{ fontSize: '1.4rem', fontWeight: 400, margin: '4px 0', color: selectedCost.gross_profit >= 0 ? 'var(--accent-green)' : 'var(--error)' }}>
                       ¥{selectedCost.gross_profit?.toFixed(0)} ({selectedCost.gross_profit_margin?.toFixed(1)}%)
                     </p>
                   </div>
@@ -124,23 +126,25 @@ export default function RecipeEditor() {
             )}
             {recipeItems.length > 0 && (
               <div style={{ marginBottom: '1.5rem', overflowX: 'auto' }}>
-                <h3>構成材料</h3>
+                <h3 style={{ fontSize: '0.65rem', fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: '0.12em', textTransform: 'uppercase' as const }}>構成材料</h3>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
-                  <thead><tr style={{ borderBottom: '1px solid #444', color: '#aaa' }}>
-                    <th style={{ padding: '6px' }}>材料</th><th style={{ padding: '6px' }}>1回の使用量</th><th style={{ padding: '6px' }}>削除</th>
+                  <thead><tr style={{ borderBottom: '1px solid var(--outline-variant)', color: 'var(--text-secondary)' }}>
+                    <th style={{ padding: '6px', fontSize: '0.625rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' as const, textAlign: 'left' }}>材料</th>
+                    <th style={{ padding: '6px', fontSize: '0.625rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' as const, textAlign: 'left' }}>1回の使用量</th>
+                    <th style={{ padding: '6px', fontSize: '0.625rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' as const, textAlign: 'right' }}>削除</th>
                   </tr></thead>
                   <tbody>{recipeItems.map((it: any) => (
-                    <tr key={it.id} style={{ borderBottom: '1px solid #333' }}>
-                      <td style={{ padding: '6px' }}>{it.name}</td>
-                      <td style={{ padding: '6px' }}>{it.quantity}{it.unit_type || ''}</td>
-                      <td style={{ padding: '6px' }}><button onClick={() => handleDeleteItem(it.id)} style={{ background: '#ef4444', color: '#fff', border: 'none', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer', minHeight: '36px' }}>🗑️</button></td>
+                    <tr key={it.id} style={{ borderBottom: '1px solid rgba(169,180,185,0.08)' }}>
+                      <td style={{ padding: '6px', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300 }}>{it.name}</td>
+                      <td className="manrope-numbers" style={{ padding: '6px', fontWeight: 300 }}>{it.quantity}{it.unit_type || ''}</td>
+                      <td style={{ padding: '6px', textAlign: 'right' }}><button onClick={() => handleDeleteItem(it.id)} style={{ background: 'transparent', color: 'var(--error)', border: 'none', borderRadius: '2px', padding: '4px 8px', cursor: 'pointer', minHeight: '36px' }}><span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>delete</span></button></td>
                     </tr>
                   ))}</tbody>
                 </table>
               </div>
             )}
-            <div style={{ background: '#2a2a2a', padding: '14px', borderRadius: '8px' }}>
-              <h3 style={{ marginTop: 0 }}>材料追加</h3>
+            <div style={{ background: 'var(--surface-container-low)', padding: '14px', borderRadius: '2px', border: '1px solid rgba(169,180,185,0.1)' }}>
+              <h3 style={{ marginTop: 0, fontSize: '0.65rem', fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: '0.12em', textTransform: 'uppercase' as const }}>材料追加</h3>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
                 <select value={itemType} onChange={e => setItemType(e.target.value)} style={inp}>
                   <option value="ingredient">原材料</option><option value="recipe">別レシピ</option>
@@ -157,11 +161,11 @@ export default function RecipeEditor() {
                   </select>
                 )}
               </div>
-              <label style={{ color: '#aaa', fontSize: '0.8rem' }}>1回作るときの使用量</label>
+              <label style={{ color: 'var(--text-secondary)', fontSize: '0.7rem', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300 }}>1回作るときの使用量</label>
               <input style={{ ...inp, marginBottom: '8px' }} type="number" step="any" placeholder="例: 1.8" value={itemQty || ''} onChange={e => setItemQty(Number(e.target.value))} />
-              <button onClick={handleAddItem} style={{ width: '100%', background: '#3b82f6', color: '#fff', padding: '10px', fontWeight: 'bold', border: 'none', borderRadius: '4px', cursor: 'pointer', minHeight: '44px' }}>材料を追加</button>
+              <button onClick={handleAddItem} style={{ width: '100%', background: 'var(--primary-color)', color: 'var(--on-primary)', padding: '10px', fontWeight: 300, border: 'none', borderRadius: '2px', cursor: 'pointer', minHeight: '44px', fontFamily: "'Noto Sans JP', sans-serif", fontSize: '0.75rem', letterSpacing: '0.08em' }}>材料を追加</button>
             </div>
-          </>) : <p style={{ color: '#888' }}>左からレシピを選択</p>}
+          </>) : <p style={{ color: 'var(--text-secondary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300 }}>左からレシピを選択</p>}
         </div>
       </div>
     </div>
