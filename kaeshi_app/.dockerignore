@@ -1,0 +1,14 @@
+.git
+.env
+.venv
+venv/
+__pycache__
+*.pyc
+*.sqlite
+*.db
+backend/kaeshi_app.db
+frontend/node_modules
+frontend/dist
+.DS_Store
+.vscode/
+.gemini/

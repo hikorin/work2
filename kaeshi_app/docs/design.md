@@ -7,9 +7,10 @@
   - **スタイリング**: Vanilla CSSを使用。ダークモード＆グラスモーフィズムのリッチUI。
 - **バックエンド**: Python (FastAPI)
   - レシピの再帰的原価計算エンジン、納品・請求書API等を提供する。
-- **データベース**: SQLite (SQLAlchemy ORM)
+  - プロダクション環境では、ビルド済みのフロントエンド静的ファイルをFastAPI経由で配信する構成とする。
+- **データベース**: PostgreSQL (Neon Serverless Postgres / SQLAlchemy ORM)
+  - クラウド環境（Cloud Run）でのステートレス運用に対応するためNeonを採用。ローカル開発時はSQLiteをフォールバックとして利用可能。
   - 要件定義で作成したER図に基づき、リレーショナルデータとして厳密に管理。
-
 ---
 
 ## 2. データモデル詳細設計（v2 変更点）
@@ -323,4 +324,5 @@ bowl_cost = batch_cost * (recipe.bowl_amount / recipe.batch_yield)
 
 ## 7. セキュリティとインフラ構成
 - バックエンドAPIとフロントエンド間に、`.env` に設定したID/PWに基づくシンプルな認証機能。
-- 将来的にはGCP等へのデプロイを見据え、Dockerコンテナ化しやすい構成。
+- **インフラ構成**: 本番環境は **Google Cloud Run** にデプロイして運用。
+- **コンテナ化**: フロントエンドとバックエンドを1つの `Dockerfile` (マルチステージビルド) で統合し、FastAPI（Uvicorn）をWebサーバー兼APIサーバーとして稼働させる構成を採用する。これによりCloud Runの1コンテナでシンプルに運用可能。

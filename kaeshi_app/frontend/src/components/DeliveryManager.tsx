@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react';
-const API = 'http://100.98.193.61:8080/api';
+const API = '/api';
 
 export default function DeliveryManager() {
   const [destinations, setDestinations] = useState<any[]>([]);
