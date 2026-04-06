@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react';
 
-const API = 'http://127.0.0.1:8001/api';
+const API = 'http://100.98.193.61:8000/api';
 
 export default function IngredientsManager() {
   const [ingredients, setIngredients] = useState<any[]>([]);
