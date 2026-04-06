@@ -1,0 +1,23 @@
+[[rule]]
+toolName = "run_shell_command"
+commandPrefix = "rm"
+decision = "ask"
+priority = 200
+
+[[rule]]
+toolName = "run_shell_command"
+commandPrefix = "del"
+decision = "ask"
+priority = 200
+
+[[rule]]
+toolName = "run_shell_command"
+commandPrefix = "mv"
+decision = "ask"
+priority = 200
+
+[[rule]]
+toolName = "run_shell_command"
+commandPrefix = "move"
+decision = "ask"
+priority = 200
