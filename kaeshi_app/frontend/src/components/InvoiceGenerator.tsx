@@ -78,7 +78,7 @@ export default function InvoiceGenerator() {
 
   return (
     <div className="glass-panel" style={{ minHeight: '60vh' }}>
-      <h2 style={{ color: 'var(--text-primary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 100, fontSize: '1.4rem', letterSpacing: '-0.02em' }}>請求書作成</h2>
+      <h2 style={{ color: 'var(--text-primary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 700, fontSize: '1.4rem', letterSpacing: '-0.02em' }}>請求書作成</h2>
       <p style={{ color: 'var(--text-secondary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase' as const }}>Automated Invoicing & Archives</p>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.5rem', marginTop: '1rem' }}>
@@ -100,7 +100,7 @@ export default function InvoiceGenerator() {
 
       {invoiceDetail && (
         <div style={{ marginTop: '2rem', background: '#ffffff', color: 'var(--text-primary)', padding: '2rem', borderRadius: '2px', border: '1px solid rgba(169,180,185,0.15)', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-          <h3 style={{ textAlign: 'center', margin: '0 0 1rem', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 100, fontSize: '1.3rem', letterSpacing: '0.3em' }}>請 求 書</h3>
+          <h3 style={{ textAlign: 'center', margin: '0 0 1rem', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 700, fontSize: '1.3rem', letterSpacing: '0.3em' }}>請 求 書</h3>
           <p style={{ fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.875rem' }}><strong style={{ fontWeight: 500 }}>請求先:</strong> {invoiceDetail.destination_name} 様</p>
           <p style={{ fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.875rem' }}><strong style={{ fontWeight: 500 }}>請求期間:</strong> {invoiceDetail.target_start_date} 〜 {invoiceDetail.target_end_date}</p>
           <div style={{ overflowX: 'auto' }}>
