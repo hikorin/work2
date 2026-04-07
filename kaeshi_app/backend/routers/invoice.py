@@ -93,3 +93,27 @@ def generate_invoice(data: schemas.InvoiceGenerate, db: Session = Depends(get_db
     db.refresh(new_invoice)
     logger.info(f"請求書生成: ID={new_invoice.id}, 金額={total_amount}")
     return {"message": "請求書を作成しました", "invoice": {"id": new_invoice.id, "total": new_invoice.total_amount}}
+
+@router.put("/{invoice_id}")
+def update_invoice(invoice_id: int, data: schemas.InvoiceUpdate, db: Session = Depends(get_db)):
+    invoice = db.query(models.Invoice).filter(models.Invoice.id == invoice_id).first()
+    if not invoice:
+        raise HTTPException(status_code=404, detail="請求書が見つかりません")
+    if data.status is not None:
+        invoice.status = data.status
+    db.commit()
+    return {"message": "請求書のステータスを更新しました"}
+
+@router.delete("/{invoice_id}")
+def delete_invoice(invoice_id: int, db: Session = Depends(get_db)):
+    invoice = db.query(models.Invoice).filter(models.Invoice.id == invoice_id).first()
+    if not invoice:
+        raise HTTPException(status_code=404, detail="請求書が見つかりません")
+    # 関連する納品伝票の invoice_id を NULL に戻す
+    deliveries = db.query(models.Delivery).filter(models.Delivery.invoice_id == invoice_id).all()
+    for d in deliveries:
+        d.invoice_id = None
+    db.delete(invoice)
+    db.commit()
+    logger.info(f"請求書削除: ID={invoice_id}")
+    return {"message": "請求書を削除しました"}

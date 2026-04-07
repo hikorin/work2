@@ -9,6 +9,7 @@ export default function DeliveryManager() {
   const [deliveryDate, setDeliveryDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [destId, setDestId] = useState<number | ''>('');
   const [items, setItems] = useState<{ recipe_id: number | ''; quantity: number }[]>([{ recipe_id: '', quantity: 1 }]);
+  const [editingId, setEditingId] = useState<number | null>(null);
 
   const fetchAll = async () => {
     try {
@@ -37,16 +38,47 @@ export default function DeliveryManager() {
     if (res.ok) {
       const data = await res.json();
       alert(`納品登録完了！ 納品番号: ${data.delivery_number}`);
-      setItems([{ recipe_id: '', quantity: 1 }]);
+      resetForm();
       fetchAll();
+    } else {
+      const err = await res.json();
+      alert(err.detail || '登録に失敗しました');
     }
+  };
+
+  const handleUpdate = async () => {
+    if (!editingId || !destId || items.some(i => !i.recipe_id)) return;
+    const body = { delivery_date: deliveryDate, destination_id: destId, items: items.map(i => ({ recipe_id: Number(i.recipe_id), quantity: i.quantity })) };
+    const res = await fetch(`${API}/deliveries/${editingId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    if (res.ok) {
+      alert(`納品記録を更新しました`);
+      resetForm();
+      fetchAll();
+    } else {
+      const err = await res.json();
+      alert(err.detail || '更新に失敗しました');
+    }
+  };
+
+  const resetForm = () => {
+    setEditingId(null);
+    setDeliveryDate(new Date().toISOString().split('T')[0]);
+    setDestId('');
+    setItems([{ recipe_id: '', quantity: 1 }]);
+  };
+
+  const handleEdit = (d: any) => {
+    setEditingId(d.id);
+    setDeliveryDate(d.delivery_date);
+    setDestId(d.destination_id);
+    setItems(d.items.map((i: any) => ({ recipe_id: i.recipe_id, quantity: i.quantity })));
   };
 
   const handleDelete = async (id: number) => {
     if (!confirm('この納品記録を削除しますか？')) return;
     const res = await fetch(`${API}/deliveries/${id}`, { method: 'DELETE' });
     if (res.ok) fetchAll();
-    else { const err = await res.json(); alert(err.detail); }
+    else { const err = await res.json(); alert(err.detail || '削除に失敗しました'); }
   };
 
   const inputStyle = { padding: '10px', borderRadius: '0', border: 'none', borderBottom: '1px solid var(--outline-variant)', background: 'transparent', color: 'var(--text-primary)', width: '100%', boxSizing: 'border-box' as const, fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300 as const, fontSize: '0.875rem', outline: 'none', transition: 'border-color 0.2s' };
@@ -54,8 +86,8 @@ export default function DeliveryManager() {
 
   return (
     <div className="glass-panel" style={{ minHeight: '60vh' }}>
-      <h2 style={{ color: 'var(--text-primary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 100, fontSize: '1.4rem', letterSpacing: '-0.02em' }}>納品管理</h2>
-      <p style={{ color: 'var(--text-secondary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase' as const }}>Delivery Records & Logistics</p>
+      <h2 style={{ color: 'var(--text-primary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 100, fontSize: '1.4rem', letterSpacing: '-0.02em' }}>{editingId ? '納品編集' : '納品登録'}</h2>
+      <p style={{ color: 'var(--text-secondary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase' as const }}>{editingId ? 'Edit Delivery' : 'Delivery Records & Logistics'}</p>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '0.5rem', marginBottom: '1rem' }}>
         <input style={inputStyle} type="date" value={deliveryDate} onChange={e => setDeliveryDate(e.target.value)} onKeyDown={e => e.preventDefault()} />
@@ -78,7 +110,15 @@ export default function DeliveryManager() {
       ))}
       <button onClick={addRow} style={{ ...btnStyle, background: 'var(--surface-container)', color: 'var(--text-primary)', padding: '8px 16px', marginBottom: '1rem' }}>＋ 品目追加</button>
       <br />
-      <button onClick={handleSubmit} style={{ ...btnStyle, background: 'var(--primary-color)', color: 'var(--on-primary)', padding: '12px 24px', width: '100%' }}>納品を登録する</button>
+      
+      {editingId ? (
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <button onClick={handleUpdate} style={{ ...btnStyle, background: 'var(--primary-color)', color: 'var(--on-primary)', padding: '12px 24px', flex: 1 }}>記録を更新する</button>
+          <button onClick={resetForm} style={{ ...btnStyle, background: 'var(--surface-container-high)', color: 'var(--text-primary)', padding: '12px 24px', flex: 1, border: '1px solid var(--outline-variant)' }}>キャンセル</button>
+        </div>
+      ) : (
+        <button onClick={handleSubmit} style={{ ...btnStyle, background: 'var(--primary-color)', color: 'var(--on-primary)', padding: '12px 24px', width: '100%' }}>納品を登録する</button>
+      )}
 
       <hr style={{ borderColor: 'rgba(169,180,185,0.15)', margin: '2rem 0', borderStyle: 'solid', borderWidth: '0 0 1px 0' }} />
 
@@ -100,7 +140,11 @@ export default function DeliveryManager() {
               <td style={{ padding: '10px 8px', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.8rem' }}>{d.items?.map((i: any) => `${i.recipe_name}×${i.quantity}`).join(', ')}</td>
               <td style={{ padding: '10px 8px', textAlign: 'right' }}>
                 {d.invoice_id ? <span style={{ color: 'var(--text-secondary)', fontSize: '0.7rem', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300 }}>請求済</span> :
-                  <button onClick={() => handleDelete(d.id)} style={{ ...btnStyle, background: 'transparent', color: 'var(--error)', padding: '4px 10px' }}><span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>delete</span></button>}
+                  <div style={{ display: 'flex', gap: '4px', justifyContent: 'flex-end' }}>
+                    <button onClick={() => handleEdit(d)} style={{ ...btnStyle, background: 'transparent', color: 'var(--primary-color)', padding: '4px 10px' }}><span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>edit</span></button>
+                    <button onClick={() => handleDelete(d.id)} style={{ ...btnStyle, background: 'transparent', color: 'var(--error)', padding: '4px 10px' }}><span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>delete</span></button>
+                  </div>
+                }
               </td>
             </tr>
           ))}</tbody>

@@ -19,9 +19,12 @@ function App() {
     <div style={{ minHeight: '100vh', paddingBottom: '70px', background: 'var(--bg-color)' }}>
       {/* Header */}
       <header style={{ padding: '1rem', textAlign: 'center', borderBottom: '1px solid rgba(169,180,185,0.15)' }}>
-        <h1 className="thin-header" style={{ margin: 0, fontSize: '1.5rem', color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>
-          Kaeshi <span style={{ fontWeight: 300, color: 'var(--primary-color)' }}>Precision</span>
-        </h1>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px' }}>
+          <img src="/logo.png" alt="歩輝勇データベース" style={{ height: '50px', objectFit: 'contain' }} />
+          <h1 className="thin-header" style={{ margin: 0, fontSize: '1.1rem', color: 'var(--text-primary)', letterSpacing: '0.05em', fontWeight: 600 }}>
+            データベース
+          </h1>
+        </div>
       </header>
 
       {/* Main Content */}

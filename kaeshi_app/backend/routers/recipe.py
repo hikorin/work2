@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 import models, database, schemas
 import logging
 
@@ -49,9 +50,13 @@ def delete_recipe(recipe_id: int, db: Session = Depends(get_db)):
     recipe = db.query(models.Recipe).filter(models.Recipe.id == recipe_id).first()
     if not recipe:
         raise HTTPException(status_code=404, detail="レシピが見つかりません")
-    db.query(models.RecipeItem).filter(models.RecipeItem.parent_recipe_id == recipe_id).delete()
-    db.delete(recipe)
-    db.commit()
+    try:
+        db.query(models.RecipeItem).filter(models.RecipeItem.parent_recipe_id == recipe_id).delete()
+        db.delete(recipe)
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="このレシピは他のレシピの材料として使われているか、既に納品実績があるため削除できません。")
     return {"message": "削除しました"}
 
 @router.get("/{recipe_id}/items")

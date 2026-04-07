@@ -44,6 +44,14 @@ export default function RecipeEditor() {
     fetchData();
   };
 
+  const handleUpdate = async () => {
+    if (!selectedRecipeId || !recipeName) return;
+    await fetch(`${API}/recipes/${selectedRecipeId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: recipeName, delivery_batches: deliveryBatches, batch_yield: batchYield, bowl_amount: bowlAmount, bowl_unit: bowlUnit, packing_fee: packingFee, target_price: targetPrice })
+    });
+    fetchData();
+  };
+
   const handleAddItem = async () => {
     if (!selectedRecipeId || itemQty <= 0) return;
     await fetch(`${API}/recipes/${selectedRecipeId}/items`, { method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -61,9 +69,31 @@ export default function RecipeEditor() {
 
   const handleDeleteRecipe = async (id: number) => {
     if (!confirm('削除しますか？')) return;
-    await fetch(`${API}/recipes/${id}`, { method: 'DELETE' });
+    const res = await fetch(`${API}/recipes/${id}`, { method: 'DELETE' });
+    if (!res.ok) {
+      const err = await res.json();
+      alert(err.detail || '削除に失敗しました（他のデータと紐付いている可能性があります）');
+      return;
+    }
     if (selectedRecipeId === id) { setSelectedRecipeId(null); setSelectedCost(null); setRecipeItems([]); }
     fetchData();
+  };
+
+  const handleSelectRecipe = (r: any) => {
+    setSelectedRecipeId(r.id);
+    setRecipeName(r.name);
+    setDeliveryBatches(r.delivery_batches);
+    setBatchYield(r.batch_yield);
+    setBowlAmount(r.bowl_amount);
+    setBowlUnit(r.bowl_unit);
+    setPackingFee(r.packing_fee);
+    setTargetPrice(r.target_price);
+    fetchCostAndItems(r.id);
+  };
+
+  const resetForm = () => {
+    setSelectedRecipeId(null); setSelectedCost(null); setRecipeItems([]);
+    setRecipeName(''); setDeliveryBatches(1); setBatchYield(1); setBowlAmount(0); setPackingFee(0); setTargetPrice(0);
   };
 
   const inp = { padding: '8px', background: 'transparent', color: 'var(--text-primary)', border: 'none', borderBottom: '1px solid var(--outline-variant)', borderRadius: '0', width: '100%', boxSizing: 'border-box' as const, fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300 as const, fontSize: '0.875rem', outline: 'none', transition: 'border-color 0.2s' };
@@ -73,15 +103,18 @@ export default function RecipeEditor() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
         {/* Left */}
         <div>
-          <h2 style={{ color: 'var(--text-primary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 100, fontSize: '1.4rem', letterSpacing: '-0.02em' }}>レシピ登録</h2>
-          <p style={{ color: 'var(--text-secondary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase' as const, marginTop: '-0.5rem' }}>Recipe Registration</p>
+          <h2 style={{ color: 'var(--text-primary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 100, fontSize: '1.4rem', letterSpacing: '-0.02em' }}>{selectedRecipeId ? 'レシピ編集' : 'レシピ登録'}</h2>
+          <p style={{ color: 'var(--text-secondary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase' as const, marginTop: '-0.5rem' }}>{selectedRecipeId ? 'Edit Recipe' : 'Recipe Registration'}</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '1.5rem' }}>
             <input style={inp} placeholder="品名" value={recipeName} onChange={e => setRecipeName(e.target.value)} />
             <input style={inp} type="number" step="any" placeholder="販売価格" value={targetPrice || ''} onChange={e => setTargetPrice(Number(e.target.value))} />
             <label style={{ color: 'var(--text-secondary)', fontSize: '0.7rem', marginTop: '4px', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300 }}>納品 = 何回作成分か</label>
             <input style={inp} type="number" step="any" placeholder="何回分 (例: 3)" value={deliveryBatches || ''} onChange={e => setDeliveryBatches(Number(e.target.value))} />
             <label style={{ color: 'var(--text-secondary)', fontSize: '0.7rem', marginTop: '4px', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300 }}>1回の出来上がり量</label>
-            <input style={inp} type="number" step="any" placeholder="出来上がり量 (例: 2.0)" value={batchYield || ''} onChange={e => setBatchYield(Number(e.target.value))} />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px', gap: '6px' }}>
+              <input style={inp} type="number" step="any" placeholder="出来上がり量 (例: 2.0)" value={batchYield || ''} onChange={e => setBatchYield(Number(e.target.value))} />
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>{bowlUnit}</div>
+            </div>
             <label style={{ color: 'var(--text-secondary)', fontSize: '0.7rem', marginTop: '4px', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300 }}>ラーメン一杯の使用量</label>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px', gap: '6px' }}>
               <input style={inp} type="number" step="any" placeholder="一杯の量 (例: 0.06)" value={bowlAmount || ''} onChange={e => setBowlAmount(Number(e.target.value))} />
@@ -90,12 +123,21 @@ export default function RecipeEditor() {
               </select>
             </div>
             <input style={inp} type="number" step="any" placeholder="梱包料" value={packingFee || ''} onChange={e => setPackingFee(Number(e.target.value))} />
-            <button onClick={handleCreate} style={{ background: 'var(--primary-color)', color: 'var(--on-primary)', padding: '10px', fontWeight: 300, border: 'none', borderRadius: '2px', cursor: 'pointer', minHeight: '44px', fontFamily: "'Noto Sans JP', sans-serif", fontSize: '0.75rem', letterSpacing: '0.08em', transition: 'opacity 0.2s' }}>＋ レシピ作成</button>
+            
+            {selectedRecipeId ? (
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button onClick={handleUpdate} style={{ flex: 1, background: 'var(--primary-color)', color: 'var(--on-primary)', padding: '10px', fontWeight: 300, border: 'none', borderRadius: '2px', cursor: 'pointer', minHeight: '44px', fontFamily: "'Noto Sans JP', sans-serif", fontSize: '0.75rem', letterSpacing: '0.08em', transition: 'opacity 0.2s' }}>更新</button>
+                <button onClick={resetForm} style={{ flex: 1, background: 'var(--surface-container-high)', color: 'var(--text-primary)', padding: '10px', fontWeight: 300, border: '1px solid var(--outline-variant)', borderRadius: '2px', cursor: 'pointer', minHeight: '44px', fontFamily: "'Noto Sans JP', sans-serif", fontSize: '0.75rem', letterSpacing: '0.08em', transition: 'opacity 0.2s' }}>キャンセル</button>
+              </div>
+            ) : (
+              <button onClick={handleCreate} style={{ background: 'var(--primary-color)', color: 'var(--on-primary)', padding: '10px', fontWeight: 300, border: 'none', borderRadius: '2px', cursor: 'pointer', minHeight: '44px', fontFamily: "'Noto Sans JP', sans-serif", fontSize: '0.75rem', letterSpacing: '0.08em', transition: 'opacity 0.2s' }}>＋ レシピ作成</button>
+            )}
+            
           </div>
           <h3 style={{ fontSize: '0.65rem', fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: '0.12em', textTransform: 'uppercase' as const }}>レシピ一覧</h3>
           {recipes.map(r => (
             <div key={r.id} style={{ display: 'flex', gap: '4px', marginBottom: '6px' }}>
-              <button onClick={() => { setSelectedRecipeId(r.id); fetchCostAndItems(r.id); }} style={{ flex: 1, textAlign: 'left', padding: '10px', background: selectedRecipeId === r.id ? 'var(--primary-container)' : 'var(--surface-container-low)', border: selectedRecipeId === r.id ? '1px solid var(--primary-color)' : '1px solid rgba(169,180,185,0.15)', color: 'var(--text-primary)', borderRadius: '2px', cursor: 'pointer', minHeight: '44px', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.875rem', transition: 'all 0.15s' }}>
+              <button onClick={() => handleSelectRecipe(r)} style={{ flex: 1, textAlign: 'left', padding: '10px', background: selectedRecipeId === r.id ? 'var(--primary-container)' : 'var(--surface-container-low)', border: selectedRecipeId === r.id ? '1px solid var(--primary-color)' : '1px solid rgba(169,180,185,0.15)', color: 'var(--text-primary)', borderRadius: '2px', cursor: 'pointer', minHeight: '44px', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.875rem', transition: 'all 0.15s' }}>
                 {r.name} <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem' }}>({r.delivery_batches}回分)</span>
               </button>
               <button onClick={() => handleDeleteRecipe(r.id)} style={{ background: 'transparent', color: 'var(--error)', border: '1px solid rgba(169,180,185,0.15)', borderRadius: '2px', padding: '0 10px', cursor: 'pointer', minHeight: '44px', transition: 'opacity 0.2s' }}><span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>delete</span></button>

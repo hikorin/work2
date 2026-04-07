@@ -63,3 +63,6 @@ class InvoiceGenerate(BaseModel):
     destination_id: int
     start_date: date
     end_date: date
+
+class InvoiceUpdate(BaseModel):
+    status: Optional[str] = None

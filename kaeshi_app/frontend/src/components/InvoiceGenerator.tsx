@@ -46,7 +46,35 @@ export default function InvoiceGenerator() {
     if (res.ok) setInvoiceDetail(await res.json());
   };
 
+  const handleUpdateStatus = async (id: number, newStatus: string) => {
+    const res = await fetch(`${API}/invoices/${id}`, {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: newStatus })
+    });
+    if (res.ok) {
+       fetchAll();
+       if (invoiceDetail?.invoice_id === id) fetchInvoiceDetail(id);
+    } else {
+       const err = await res.json();
+       alert(err.detail || '更新に失敗しました');
+    }
+  };
+
+  const handleDeleteInvoice = async (id: number) => {
+    if (!confirm('本当に削除しますか？\n（関連する納品伝票は未請求状態に戻ります）')) return;
+    const res = await fetch(`${API}/invoices/${id}`, { method: 'DELETE' });
+    if (res.ok) {
+       fetchAll();
+       if (invoiceDetail?.invoice_id === id) setInvoiceDetail(null);
+       if (invoiceResult?.invoice?.id === id) setInvoiceResult(null);
+    } else {
+       const err = await res.json();
+       alert(err.detail || '削除に失敗しました');
+    }
+  };
+
   const inputStyle = { padding: '10px', borderRadius: '0', border: 'none', borderBottom: '1px solid var(--outline-variant)', background: 'transparent', color: 'var(--text-primary)', width: '100%', boxSizing: 'border-box' as const, fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300 as const, fontSize: '0.875rem', outline: 'none', transition: 'border-color 0.2s' };
+  const btnStyle = { border: 'none', borderRadius: '2px', cursor: 'pointer', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, transition: 'opacity 0.2s' };
 
   return (
     <div className="glass-panel" style={{ minHeight: '60vh' }}>
@@ -60,7 +88,7 @@ export default function InvoiceGenerator() {
           <option value="">納品先を選択...</option>
           {destinations.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
         </select>
-        <button onClick={handleGenerate} style={{ background: 'var(--primary-color)', color: 'var(--on-primary)', padding: '10px', fontWeight: 300, border: 'none', borderRadius: '2px', cursor: 'pointer', minHeight: '44px', fontFamily: "'Noto Sans JP', sans-serif", fontSize: '0.75rem', letterSpacing: '0.08em', transition: 'opacity 0.2s' }}>請求書を作成</button>
+        <button onClick={handleGenerate} style={{ ...btnStyle, background: 'var(--primary-color)', color: 'var(--on-primary)', padding: '10px', minHeight: '44px', fontSize: '0.75rem', letterSpacing: '0.08em' }}>請求書を作成</button>
       </div>
 
       {invoiceResult && !invoiceDetail && (
@@ -117,7 +145,7 @@ export default function InvoiceGenerator() {
                 <th style={{ padding: '12px 8px', fontSize: '0.625rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' as const, textAlign: 'left' }}>期間</th>
                 <th style={{ padding: '12px 8px', fontSize: '0.625rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' as const, textAlign: 'right' }}>金額</th>
                 <th style={{ padding: '12px 8px', fontSize: '0.625rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' as const, textAlign: 'left' }}>状態</th>
-                <th style={{ padding: '12px 8px', fontSize: '0.625rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' as const, textAlign: 'right' }}>詳細</th>
+                <th style={{ padding: '12px 8px', fontSize: '0.625rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' as const, textAlign: 'right' }}>操作</th>
               </tr></thead>
               <tbody>{invoices.map(inv => (
                 <tr key={inv.id} style={{ borderBottom: '1px solid rgba(169,180,185,0.08)' }}>
@@ -125,8 +153,22 @@ export default function InvoiceGenerator() {
                   <td style={{ padding: '10px 8px', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300 }}>{inv.destination_name}</td>
                   <td className="manrope-numbers" style={{ padding: '10px 8px', fontWeight: 300, fontSize: '0.8rem' }}>{inv.target_start_date}〜{inv.target_end_date}</td>
                   <td className="manrope-numbers" style={{ padding: '10px 8px', color: 'var(--primary-color)', fontWeight: 400, textAlign: 'right' }}>¥{inv.total_amount?.toLocaleString()}</td>
-                  <td style={{ padding: '10px 8px', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.8rem' }}>{inv.status}</td>
-                  <td style={{ padding: '10px 8px', textAlign: 'right' }}><button onClick={() => fetchInvoiceDetail(inv.id)} style={{ background: 'var(--primary-color)', color: 'var(--on-primary)', border: 'none', borderRadius: '2px', padding: '6px 14px', cursor: 'pointer', minHeight: '36px', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.7rem', letterSpacing: '0.08em', transition: 'opacity 0.2s' }}>表示</button></td>
+                  <td style={{ padding: '10px 8px', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.8rem' }}>
+                    <select 
+                      value={inv.status} 
+                      onChange={e => handleUpdateStatus(inv.id, e.target.value)}
+                      style={{ padding: '4px', background: 'transparent', color: 'var(--text-primary)', border: '1px solid var(--outline-variant)', borderRadius: '2px', fontSize: '0.75rem', fontFamily: "'Noto Sans JP', sans-serif" }}
+                    >
+                      <option value="未払い">未払い</option>
+                      <option value="支払済み" style={{ color: 'var(--accent-green)' }}>支払済み</option>
+                    </select>
+                  </td>
+                  <td style={{ padding: '10px 8px', textAlign: 'right' }}>
+                    <div style={{ display: 'flex', gap: '4px', justifyContent: 'flex-end' }}>
+                      <button onClick={() => fetchInvoiceDetail(inv.id)} style={{ ...btnStyle, background: 'var(--primary-color)', color: 'var(--on-primary)', padding: '6px 14px', minHeight: '36px', fontSize: '0.7rem', letterSpacing: '0.08em' }}>表示</button>
+                      <button onClick={() => handleDeleteInvoice(inv.id)} style={{ ...btnStyle, background: 'transparent', color: 'var(--error)', padding: '6px 10px', minHeight: '36px' }}><span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>delete</span></button>
+                    </div>
+                  </td>
                 </tr>
               ))}</tbody>
             </table>
