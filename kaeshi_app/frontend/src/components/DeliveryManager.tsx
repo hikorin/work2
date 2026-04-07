@@ -142,7 +142,7 @@ export default function DeliveryManager() {
                 {d.invoice_id ? <span style={{ color: 'var(--text-secondary)', fontSize: '0.7rem', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300 }}>請求済</span> :
                   <div style={{ display: 'flex', gap: '4px', justifyContent: 'flex-end' }}>
                     <button onClick={() => handleEdit(d)} style={{ ...btnStyle, background: 'transparent', color: 'var(--primary-color)', padding: '4px 10px' }}><span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>edit</span></button>
-                    <button onClick={() => handleDelete(d.id)} style={{ ...btnStyle, background: 'transparent', color: 'var(--error)', padding: '4px 10px' }}><span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>delete</span></button>
+                    <button onClick={() => handleDelete(d.id)} style={{ ...btnStyle, background: 'var(--error)', color: 'white', padding: '4px 10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="削除"><span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>delete</span></button>
                   </div>
                 }
               </td>

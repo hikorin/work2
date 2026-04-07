@@ -1,0 +1,16 @@
+--- Detailed ID Check ---
+
+Target: 基本のかえし（1L） (ID: 1)
+  - NOT used in any other recipes.
+  - Found in delivery notes:
+    - 20260406-001
+
+Target: からネギのたれ（500g） (ID: 2)
+  - NOT used in any other recipes.
+  - Found in delivery notes:
+    - 20260406-001
+
+Target: かえし (ID: 3)
+  - NOT used in any other recipes.
+  - Found in delivery notes:
+    - 20260331-001

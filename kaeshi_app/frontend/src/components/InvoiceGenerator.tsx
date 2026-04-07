@@ -73,6 +73,23 @@ export default function InvoiceGenerator() {
     }
   };
 
+  const handleDownloadPdf = async (id: number) => {
+    try {
+      const res = await fetch(`${API}/invoices/${id}/pdf`);
+      if (!res.ok) throw new Error('PDFの生成に失敗しました');
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `invoice_${id}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } catch (e: any) {
+      alert(e.message);
+    }
+  };
+
   const inputStyle = { padding: '10px', borderRadius: '0', border: 'none', borderBottom: '1px solid var(--outline-variant)', background: 'transparent', color: 'var(--text-primary)', width: '100%', boxSizing: 'border-box' as const, fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300 as const, fontSize: '0.875rem', outline: 'none', transition: 'border-color 0.2s' };
   const btnStyle = { border: 'none', borderRadius: '2px', cursor: 'pointer', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, transition: 'opacity 0.2s' };
 
@@ -100,7 +117,13 @@ export default function InvoiceGenerator() {
 
       {invoiceDetail && (
         <div style={{ marginTop: '2rem', background: '#ffffff', color: 'var(--text-primary)', padding: '2rem', borderRadius: '2px', border: '1px solid rgba(169,180,185,0.15)', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-          <h3 style={{ textAlign: 'center', margin: '0 0 1rem', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 700, fontSize: '1.3rem', letterSpacing: '0.3em' }}>請 求 書</h3>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            <div style={{ width: '40px' }}></div>
+            <h3 style={{ margin: 0, fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 700, fontSize: '1.3rem', letterSpacing: '0.3em' }}>請 求 書</h3>
+            <button onClick={() => handleDownloadPdf(invoiceDetail.invoice_id)} style={{ ...btnStyle, background: 'var(--accent-green)', color: 'white', padding: '6px 12px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>download</span> PDF
+            </button>
+          </div>
           <p style={{ fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.875rem' }}><strong style={{ fontWeight: 500 }}>請求先:</strong> {invoiceDetail.destination_name} 様</p>
           <p style={{ fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.875rem' }}><strong style={{ fontWeight: 500 }}>請求期間:</strong> {invoiceDetail.target_start_date} 〜 {invoiceDetail.target_end_date}</p>
           <div style={{ overflowX: 'auto' }}>
@@ -166,7 +189,8 @@ export default function InvoiceGenerator() {
                   <td style={{ padding: '10px 8px', textAlign: 'right' }}>
                     <div style={{ display: 'flex', gap: '4px', justifyContent: 'flex-end' }}>
                       <button onClick={() => fetchInvoiceDetail(inv.id)} style={{ ...btnStyle, background: 'var(--primary-color)', color: 'var(--on-primary)', padding: '6px 14px', minHeight: '36px', fontSize: '0.7rem', letterSpacing: '0.08em' }}>表示</button>
-                      <button onClick={() => handleDeleteInvoice(inv.id)} style={{ ...btnStyle, background: 'transparent', color: 'var(--error)', padding: '6px 10px', minHeight: '36px' }}><span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>delete</span></button>
+                      <button onClick={() => handleDownloadPdf(inv.id)} style={{ ...btnStyle, background: 'var(--accent-green)', color: 'white', padding: '6px 10px', minHeight: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="PDFダウンロード"><span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>download</span></button>
+                      <button onClick={() => handleDeleteInvoice(inv.id)} style={{ ...btnStyle, background: 'var(--error)', color: 'white', padding: '6px 10px', minHeight: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="削除"><span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>delete</span></button>
                     </div>
                   </td>
                 </tr>

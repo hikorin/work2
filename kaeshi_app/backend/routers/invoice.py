@@ -1,7 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 import models, database, schemas
 import logging
+import os
+import tempfile
+from utils.pdf_generator import generate_invoice_pdf
 
 logger = logging.getLogger(__name__)
 
@@ -59,6 +63,28 @@ def get_invoice_detail(invoice_id: int, db: Session = Depends(get_db)):
         "status": invoice.status,
         "details": details,
     }
+
+@router.get("/{invoice_id}/pdf")
+def get_invoice_pdf(invoice_id: int, db: Session = Depends(get_db)):
+    # 請求書詳細を取得（既存のロジックを流用）
+    data = get_invoice_detail(invoice_id, db)
+    
+    # 一時ファイルを作成
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+        pdf_path = tmp.name
+    
+    try:
+        generate_invoice_pdf(data, pdf_path)
+        return FileResponse(
+            pdf_path, 
+            media_type="application/pdf", 
+            filename=f"invoice_{invoice_id}.pdf"
+        )
+    except Exception as e:
+        logger.error(f"PDF生成エラー: {str(e)}")
+        if os.path.exists(pdf_path):
+            os.remove(pdf_path)
+        raise HTTPException(status_code=500, detail=f"PDF生成に失敗しました: {str(e)}")
 
 @router.post("/generate")
 def generate_invoice(data: schemas.InvoiceGenerate, db: Session = Depends(get_db)):
