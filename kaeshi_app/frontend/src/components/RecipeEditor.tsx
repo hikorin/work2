@@ -103,7 +103,7 @@ export default function RecipeEditor() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
         {/* Left */}
         <div>
-          <h2 style={{ color: 'var(--text-primary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 700, fontSize: '1.4rem', letterSpacing: '-0.02em' }}>{selectedRecipeId ? 'レシピ編集' : 'レシピ登録'}</h2>
+          <h2 style={{ color: 'var(--text-primary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 700, fontSize: '1.1rem', letterSpacing: '-0.02em' }}>{selectedRecipeId ? 'レシピ編集' : 'レシピ登録'}</h2>
           <p style={{ color: 'var(--text-secondary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase' as const, marginTop: '-0.5rem' }}>{selectedRecipeId ? 'Edit Recipe' : 'Recipe Registration'}</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '1.5rem' }}>
             <input style={inp} placeholder="品名" value={recipeName} onChange={e => setRecipeName(e.target.value)} />
@@ -147,7 +147,7 @@ export default function RecipeEditor() {
 
         {/* Right */}
         <div>
-          <h2 style={{ color: 'var(--text-primary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 700, fontSize: '1.4rem', letterSpacing: '-0.02em' }}>原価計算</h2>
+          <h2 style={{ color: 'var(--text-primary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 700, fontSize: '1.1rem', letterSpacing: '-0.02em' }}>原価計算</h2>
           <p style={{ color: 'var(--text-secondary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase' as const, marginTop: '-0.5rem' }}>Cost Analysis</p>
           {selectedRecipeId ? (<>
             {selectedCost && (

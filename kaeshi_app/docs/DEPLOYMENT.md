@@ -19,6 +19,9 @@ gcloud run deploy kaeshi-app \
   --quiet
 ```
 
+> [!IMPORTANT]
+> **環境変数について**: 既存の Cloud Run サービス `kaeshi-app` には、すでに Neon (PostgreSQL) の `DATABASE_URL` が環境変数として設定されています。そのため、上記のコマンドを実行するだけで、以前の設定を引き継いだまま最新版がデプロイされます！😎✨
+
 ### コマンドオプションの説明
 - `kaeshi-app`: Cloud Run 上のサービス名
 - `--source .`: カレントディレクトリのソースコード（Dockerfile）を使用してビルド

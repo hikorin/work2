@@ -95,10 +95,10 @@ export default function InvoiceGenerator() {
 
   return (
     <div className="glass-panel" style={{ minHeight: '60vh' }}>
-      <h2 style={{ color: 'var(--text-primary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 700, fontSize: '1.4rem', letterSpacing: '-0.02em' }}>請求書作成</h2>
+      <h2 style={{ color: 'var(--text-primary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 700, fontSize: '1.1rem', letterSpacing: '-0.02em' }}>請求書作成</h2>
       <p style={{ color: 'var(--text-secondary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase' as const }}>Automated Invoicing & Archives</p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.5rem', marginTop: '1rem' }}>
+      <div className="no-print" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.5rem', marginTop: '1rem' }}>
         <input style={inputStyle} type="date" value={startDate} onChange={e => setStartDate(e.target.value)} onKeyDown={e => e.preventDefault()} />
         <input style={inputStyle} type="date" value={endDate} onChange={e => setEndDate(e.target.value)} onKeyDown={e => e.preventDefault()} />
         <select style={inputStyle} value={selectedDest} onChange={e => setSelectedDest(Number(e.target.value))}>
@@ -109,7 +109,7 @@ export default function InvoiceGenerator() {
       </div>
 
       {invoiceResult && !invoiceDetail && (
-        <div style={{ marginTop: '2rem', padding: '1rem', background: 'var(--surface-container-low)', borderRadius: '2px', border: '1px solid rgba(169,180,185,0.1)' }}>
+        <div className="no-print" style={{ marginTop: '2rem', padding: '1rem', background: 'var(--surface-container-low)', borderRadius: '2px', border: '1px solid rgba(169,180,185,0.1)' }}>
           <p style={{ fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300 }}>{invoiceResult.message}</p>
           {invoiceResult.total_amount !== undefined && <p className="manrope-numbers" style={{ fontWeight: 400 }}>合計: ¥{invoiceResult.total_amount?.toLocaleString()}</p>}
         </div>
@@ -120,9 +120,14 @@ export default function InvoiceGenerator() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
             <div style={{ width: '40px' }}></div>
             <h3 style={{ margin: 0, fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 700, fontSize: '1.3rem', letterSpacing: '0.3em' }}>請 求 書</h3>
-            <button onClick={() => handleDownloadPdf(invoiceDetail.invoice_id)} style={{ ...btnStyle, background: 'var(--accent-green)', color: 'white', padding: '6px 12px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>download</span> PDF
-            </button>
+            <div style={{ display: 'flex', gap: '4px' }}>
+              <button onClick={() => handleDownloadPdf(invoiceDetail.invoice_id)} className="no-print" style={{ ...btnStyle, background: 'var(--accent-green)', color: 'white', padding: '6px 12px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>download</span> PDF
+              </button>
+              <button onClick={() => window.print()} className="no-print" style={{ ...btnStyle, background: 'var(--primary-color)', color: 'white', padding: '6px 12px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>print</span> 印刷
+              </button>
+            </div>
           </div>
           <p style={{ fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.875rem' }}><strong style={{ fontWeight: 500 }}>請求先:</strong> {invoiceDetail.destination_name} 様</p>
           <p style={{ fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.875rem' }}><strong style={{ fontWeight: 500 }}>請求期間:</strong> {invoiceDetail.target_start_date} 〜 {invoiceDetail.target_end_date}</p>

@@ -70,3 +70,28 @@ body {
   background: var(--primary-container);
   color: var(--text-primary);
 }
+
+/* ===== Print Styles ===== */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .glass-panel {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+  main {
+    padding: 0 !important;
+  }
+  /* 印刷時に背景色を強制的に出すための設定 */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}

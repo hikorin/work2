@@ -33,7 +33,11 @@
   - 👑 Claude Opus 4.6 (Thinking): 要求分析（最も深い思考が必要）
   - 🧠 Claude Sonnet 4.6 (Thinking): 設計・各種レビュー・テスト設計
   - ⚡ Gemini 3.1 Pro: 実装・テスト実施・ユーザー確認・報告
+- [ ] **フェーズ6: デプロイ・運用 (進行中)**
+  - [x] GCP (Cloud Run) の現状設定の調査完了！😎✨
+  - [x] 既存のサービス `kaeshi-app` に Neon (PostgreSQL) の `DATABASE_URL` が設定済みであることを確認！🚀💖
+  - [ ] GCP への最新版デプロイの実施！💪🔥
 
 ---
 **📝 最新の作業ログ:**
-開発プロセスワークフロー（`.agents/workflows/development_process.md`）にモデル選定ポリシーを導入。フェーズの性質に応じて Opus / Sonnet / Gemini を使い分ける3段構成に更新しました！🎉✨
+GCP (Cloud Run) へのデプロイに向けた調査を実施。既存のサービス `kaeshi-app` (asia-northeast1) には、すでに Neon DB 接続用の `DATABASE_URL` が環境変数として設定されていることを確認しました！✨ これにより、追加の環境変数指定なしで「いつものコマンド」で最新版をデプロイ可能であることが判明！🚀💪 (2026-04-08)

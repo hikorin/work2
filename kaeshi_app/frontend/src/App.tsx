@@ -18,7 +18,7 @@ function App() {
   return (
     <div style={{ minHeight: '100vh', paddingBottom: '70px', background: 'var(--bg-color)' }}>
       {/* Header */}
-      <header style={{ padding: '1rem', textAlign: 'center', borderBottom: '1px solid rgba(169,180,185,0.15)' }}>
+      <header className="no-print" style={{ padding: '1rem', textAlign: 'center', borderBottom: '1px solid rgba(169,180,185,0.15)' }}>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px' }}>
           <img src="/logo.png" alt="歩輝勇データベース" style={{ height: '50px', objectFit: 'contain' }} />
           <h1 className="thin-header" style={{ margin: 0, fontSize: '1.2rem', color: 'var(--text-primary)', letterSpacing: '0.05em', fontWeight: 700 }}>
@@ -30,7 +30,7 @@ function App() {
       {/* Main Content */}
       <main style={{ padding: '0 0.5rem' }}>
         {/* Page title */}
-        <div style={{ padding: '1rem 0.5rem 0' }}>
+        <div className="no-print" style={{ padding: '1rem 0.5rem 0' }}>
           <h2 className="thin-header" style={{ fontSize: '1.3rem', margin: '0 0 2px', color: 'var(--text-primary)', letterSpacing: '-0.02em', fontWeight: 700 }}>
             {tabs.find(t => t.key === activeTab)?.label}
           </h2>
@@ -45,7 +45,7 @@ function App() {
       </main>
 
       {/* Bottom Navigation (Mobile First) */}
-      <nav style={{
+      <nav className="no-print" style={{
         position: 'fixed', bottom: 0, left: 0, right: 0,
         background: 'rgba(255,255,255,0.92)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
         borderTop: '1px solid rgba(169,180,185,0.15)',

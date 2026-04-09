@@ -1,28 +1,50 @@
 import os
+import logging
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfbase.cidfonts import UnicodeCIDFont
 from reportlab.lib.units import mm
 from datetime import datetime
 
-# 日本語フォントの設定（OSに合わせてパスを切り替える）
-FONT_NAME = "HeiseiMin-W3" # 標準的な日本語フォント名（ReportLabの組み込みフォントではないので登録が必要）
+# ログの設定
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# 日本語フォント候補（OSに合わせてパスを切り替える）
 FONT_PATHS = [
-    r"C:\Windows\Fonts\msmincho.ttc",       # Windows
+    r"C:\Windows\Fonts\msmincho.ttc",       # Windows (明朝)
+    r"C:\Windows\Fonts\msgothic.ttc",       # Windows (ゴシック)
     "/usr/share/fonts/opentype/ipaexfont-mincho/ipaexm.ttf", # Linux (IPA)
-    "/usr/share/fonts/truetype/fonts-japanese-mincho.ttf"    # Linux (Common)
+    "/usr/share/fonts/truetype/fonts-japanese-mincho.ttf",   # Linux (Common)
+    "/usr/share/fonts/truetype/ipafont/ipag.ttf"            # Ubuntu (IPA Gothic)
 ]
 
 def setup_font():
+    # 1. TrueTypeフォントの登録を試みる
     for path in FONT_PATHS:
         if os.path.exists(path):
             try:
-                pdfmetrics.registerFont(TTFont("Japanese-Font", path))
-                return "Japanese-Font"
-            except Exception:
+                font_name = "Japanese-TTF"
+                pdfmetrics.registerFont(TTFont(font_name, path))
+                logger.info(f"Successfully registered TTF font: {path}")
+                return font_name
+            except Exception as e:
+                logger.warning(f"Failed to register TTF font {path}: {e}")
                 continue
-    # フォントが見つからない場合はデフォルトのHelvetica（日本語不可）を返す
+    
+    # 2. ファイルが見つからない場合は標準CIDフォント（HeiseiMin-W3）を試す
+    try:
+        font_name = "HeiseiMin-W3"
+        pdfmetrics.registerFont(UnicodeCIDFont(font_name))
+        logger.info(f"Using fallback CID font: {font_name}")
+        return font_name
+    except Exception as e:
+        logger.error(f"Failed to register CID font: {e}")
+    
+    # 3. 最終手段（日本語不可）
+    logger.error("No Japanese font found! Falling back to Helvetica (expect mojibake).")
     return "Helvetica"
 
 def generate_invoice_pdf(invoice_data: dict, output_path: str):
@@ -68,6 +90,70 @@ def generate_invoice_pdf(invoice_data: dict, output_path: str):
         c.drawString(120 * mm, y, f"{item['unit_price']:,}")
         c.drawString(150 * mm, y, f"{item['subtotal']:,}")
         y -= 7 * mm
+
+    c.save()
+    return output_path
+
+def generate_delivery_pdf(delivery_data: dict, output_path: str):
+    font = setup_font()
+    c = canvas.Canvas(output_path, pagesize=A4)
+    width, height = A4
+
+    # タイトル
+    c.setFont(font, 20)
+    c.drawCentredString(width / 2, height - 20 * mm, "納品書")
+
+    # 納品番号と日付（右上に配置）
+    c.setFont(font, 10)
+    c.drawRightString(width - 20 * mm, height - 30 * mm, f"納品番号: {delivery_data['delivery_number']}")
+    c.drawRightString(width - 20 * mm, height - 35 * mm, f"納品日: {delivery_data['delivery_date']}")
+
+    # 宛先
+    c.setFont(font, 14)
+    c.drawString(20 * mm, height - 45 * mm, f"{delivery_data['destination_name']} 御中")
+    c.line(20 * mm, height - 47 * mm, 100 * mm, height - 47 * mm)
+
+    # 挨拶など
+    c.setFont(font, 10)
+    c.drawString(20 * mm, height - 55 * mm, "下記の通り、納品申し上げます。")
+
+    # 明細のヘッダー
+    y = height - 70 * mm
+    c.line(20 * mm, y + 2 * mm, width - 20 * mm, y + 2 * mm)
+    c.drawString(25 * mm, y, "品目 / 商品名")
+    c.drawRightString(130 * mm, y, "数量")
+    c.drawString(135 * mm, y, "単位")
+    c.drawString(155 * mm, y, "備考")
+    c.line(20 * mm, y - 2 * mm, width - 20 * mm, y - 2 * mm)
+
+    # 明細行
+    y -= 10 * mm
+    for item in delivery_data["items"]:
+        if y < 30 * mm:  # 改ページ処理
+            c.showPage()
+            c.setFont(font, 10)
+            y = height - 30 * mm
+            # ヘッダー再描画
+            c.line(20 * mm, y + 2 * mm, width - 20 * mm, y + 2 * mm)
+            c.drawString(25 * mm, y, "品目 / 商品名")
+            c.drawRightString(130 * mm, y, "数量")
+            c.drawString(135 * mm, y, "単位")
+            c.drawString(155 * mm, y, "備考")
+            c.line(20 * mm, y - 2 * mm, width - 20 * mm, y - 2 * mm)
+            y -= 10 * mm
+        
+        c.drawString(25 * mm, y, item["name"][:30])
+        c.drawRightString(130 * mm, y, f"{item['quantity']:,}")
+        c.drawString(135 * mm, y, item.get("unit", ""))
+        c.drawString(155 * mm, y, item.get("note", ""))
+        
+        y -= 8 * mm
+        c.line(20 * mm, y + 1 * mm, width - 20 * mm, y + 1 * mm)
+
+    # フッター（下部に線を引くなど）
+    c.line(20 * mm, 25 * mm, width - 20 * mm, 25 * mm)
+    c.setFont(font, 8)
+    c.drawRightString(width - 20 * mm, 20 * mm, "以上")
 
     c.save()
     return output_path

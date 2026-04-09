@@ -65,7 +65,7 @@ export default function IngredientsManager() {
 
   return (
     <div className="glass-panel" style={{ minHeight: '60vh' }}>
-      <h2 style={{ color: 'var(--text-primary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 700, fontSize: '1.4rem', letterSpacing: '-0.02em' }}>原材料マスター管理</h2>
+      <h2 style={{ color: 'var(--text-primary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 700, fontSize: '1.1rem', letterSpacing: '-0.02em' }}>原材料マスター管理</h2>
       <p style={{ color: 'var(--text-secondary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase' as const }}>Raw Material Master Management</p>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '0.5rem', marginBottom: '1rem' }}>
         <input style={inputStyle} type="text" placeholder="例: 特選醤油" value={name} onChange={e => setName(e.target.value)} />
@@ -106,7 +106,7 @@ export default function IngredientsManager() {
 
       <hr style={{ borderColor: 'rgba(169,180,185,0.15)', margin: '2rem 0', borderStyle: 'solid', borderWidth: '0 0 1px 0' }} />
 
-      <h2 style={{ color: 'var(--text-primary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 700, fontSize: '1.4rem', letterSpacing: '-0.02em' }}>納入先マスター</h2>
+      <h2 style={{ color: 'var(--text-primary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 700, fontSize: '1.1rem', letterSpacing: '-0.02em' }}>納入先マスター</h2>
       <p style={{ color: 'var(--text-secondary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase' as const }}>Delivery Destinations</p>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.5rem', marginBottom: '1rem' }}>
         <input style={inputStyle} type="text" placeholder="店舗名" value={destName} onChange={e => setDestName(e.target.value)} />

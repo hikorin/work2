@@ -1,8 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 import datetime
+import os
+import tempfile
 import models, database, schemas
 import logging
+from utils.pdf_generator import generate_delivery_pdf
 
 logger = logging.getLogger(__name__)
 
@@ -119,3 +123,47 @@ def delete_delivery(delivery_id: int, db: Session = Depends(get_db)):
     db.commit()
     logger.info(f"納品削除: ID={delivery_id}")
     return {"message": "削除しました"}
+
+@router.get("/{delivery_id}/pdf")
+def get_delivery_pdf(delivery_id: int, db: Session = Depends(get_db)):
+    delivery = db.query(models.Delivery).filter(models.Delivery.id == delivery_id).first()
+    if not delivery:
+        raise HTTPException(status_code=404, detail="納品記録が見つかりません")
+    
+    dest = db.query(models.Destination).filter(models.Destination.id == delivery.destination_id).first()
+    items = db.query(models.DeliveryItem).filter(models.DeliveryItem.delivery_id == delivery.id).all()
+    
+    item_list = []
+    for item in items:
+        recipe = db.query(models.Recipe).filter(models.Recipe.id == item.recipe_id).first()
+        item_list.append({
+            "name": recipe.name if recipe else "不明",
+            "quantity": item.quantity,
+            "unit": recipe.bowl_unit if recipe else "個",
+            "note": "" # 必要に応じて追加
+        })
+    
+    delivery_data = {
+        "delivery_number": delivery.delivery_number,
+        "delivery_date": str(delivery.delivery_date),
+        "destination_name": dest.name if dest else "不明",
+        "items": item_list
+    }
+    
+    # 一時ファイルを作成
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+        pdf_path = tmp.name
+    
+    try:
+        generate_delivery_pdf(delivery_data, pdf_path)
+        filename = f"delivery_{delivery.delivery_number}.pdf"
+        return FileResponse(
+            pdf_path, 
+            media_type="application/pdf", 
+            filename=filename
+        )
+    except Exception as e:
+        logger.error(f"PDF生成エラー: {str(e)}")
+        if os.path.exists(pdf_path):
+            os.remove(pdf_path)
+        raise HTTPException(status_code=500, detail=f"PDF生成に失敗しました: {str(e)}")
