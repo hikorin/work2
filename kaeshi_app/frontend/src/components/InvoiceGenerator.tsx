@@ -90,22 +90,19 @@ export default function InvoiceGenerator() {
     }
   };
 
-  const inputStyle = { padding: '10px', borderRadius: '0', border: 'none', borderBottom: '1px solid var(--outline-variant)', background: 'transparent', color: 'var(--text-primary)', width: '100%', boxSizing: 'border-box' as const, fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300 as const, fontSize: '0.875rem', outline: 'none', transition: 'border-color 0.2s' };
-  const btnStyle = { border: 'none', borderRadius: '2px', cursor: 'pointer', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, transition: 'opacity 0.2s' };
-
   return (
-    <div className="glass-panel" style={{ minHeight: '60vh' }}>
-      <h2 style={{ color: 'var(--text-primary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 700, fontSize: '1.1rem', letterSpacing: '-0.02em' }}>請求書作成</h2>
-      <p style={{ color: 'var(--text-secondary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase' as const }}>Automated Invoicing & Archives</p>
+    <div className="k-card" style={{ minHeight: '60vh' }}>
+      <h2 className="k-heading">請求書作成</h2>
+      <p className="k-subheading">Automated Invoicing & Archives</p>
 
       <div className="no-print" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.5rem', marginTop: '1rem' }}>
-        <input style={inputStyle} type="date" value={startDate} onChange={e => setStartDate(e.target.value)} onKeyDown={e => e.preventDefault()} />
-        <input style={inputStyle} type="date" value={endDate} onChange={e => setEndDate(e.target.value)} onKeyDown={e => e.preventDefault()} />
-        <select style={inputStyle} value={selectedDest} onChange={e => setSelectedDest(Number(e.target.value))}>
+        <input className="k-input" type="date" value={startDate} onChange={e => setStartDate(e.target.value)} onKeyDown={e => e.preventDefault()} />
+        <input className="k-input" type="date" value={endDate} onChange={e => setEndDate(e.target.value)} onKeyDown={e => e.preventDefault()} />
+        <select className="k-select" value={selectedDest} onChange={e => setSelectedDest(Number(e.target.value))}>
           <option value="">納品先を選択...</option>
           {destinations.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
         </select>
-        <button onClick={handleGenerate} style={{ ...btnStyle, background: 'var(--primary-color)', color: 'var(--on-primary)', padding: '10px', minHeight: '44px', fontSize: '0.75rem', letterSpacing: '0.08em' }}>請求書を作成</button>
+        <button onClick={handleGenerate} className="k-btn k-btn-primary">請求書を作成</button>
       </div>
 
       {invoiceResult && !invoiceDetail && (
@@ -121,40 +118,40 @@ export default function InvoiceGenerator() {
             <div style={{ width: '40px' }}></div>
             <h3 style={{ margin: 0, fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 700, fontSize: '1.3rem', letterSpacing: '0.3em' }}>請 求 書</h3>
             <div style={{ display: 'flex', gap: '4px' }}>
-              <button onClick={() => handleDownloadPdf(invoiceDetail.invoice_id)} className="no-print" style={{ ...btnStyle, background: 'var(--accent-green)', color: 'white', padding: '6px 12px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <button onClick={() => handleDownloadPdf(invoiceDetail.invoice_id)} className="k-btn k-btn-success no-print" style={{ padding: '6px 12px', fontSize: '0.7rem' }}>
                 <span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>download</span> PDF
               </button>
-              <button onClick={() => window.print()} className="no-print" style={{ ...btnStyle, background: 'var(--primary-color)', color: 'white', padding: '6px 12px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <button onClick={() => window.print()} className="k-btn k-btn-primary no-print" style={{ padding: '6px 12px', fontSize: '0.7rem' }}>
                 <span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>print</span> 印刷
               </button>
             </div>
           </div>
           <p style={{ fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.875rem' }}><strong style={{ fontWeight: 500 }}>請求先:</strong> {invoiceDetail.destination_name} 様</p>
           <p style={{ fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.875rem' }}><strong style={{ fontWeight: 500 }}>請求期間:</strong> {invoiceDetail.target_start_date} 〜 {invoiceDetail.target_end_date}</p>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '1rem' }}>
+          <div className="k-table-wrapper">
+            <table className="k-table" style={{ marginTop: '1rem' }}>
               <thead><tr style={{ background: 'var(--surface-container-high)' }}>
-                <th style={{ padding: '8px', border: '1px solid var(--outline-variant)', fontSize: '0.7rem', fontWeight: 500, fontFamily: "'Noto Sans JP', sans-serif" }}>納品日</th>
-                <th style={{ padding: '8px', border: '1px solid var(--outline-variant)', fontSize: '0.7rem', fontWeight: 500, fontFamily: "'Noto Sans JP', sans-serif" }}>番号</th>
-                <th style={{ padding: '8px', border: '1px solid var(--outline-variant)', fontSize: '0.7rem', fontWeight: 500, fontFamily: "'Noto Sans JP', sans-serif" }}>品名</th>
-                <th style={{ padding: '8px', border: '1px solid var(--outline-variant)', fontSize: '0.7rem', fontWeight: 500, fontFamily: "'Noto Sans JP', sans-serif", textAlign: 'right' }}>数量</th>
-                <th style={{ padding: '8px', border: '1px solid var(--outline-variant)', fontSize: '0.7rem', fontWeight: 500, fontFamily: "'Noto Sans JP', sans-serif", textAlign: 'right' }}>単価</th>
-                <th style={{ padding: '8px', border: '1px solid var(--outline-variant)', fontSize: '0.7rem', fontWeight: 500, fontFamily: "'Noto Sans JP', sans-serif", textAlign: 'right' }}>小計</th>
+                <th className="k-th" style={{ border: '1px solid var(--outline-variant)' }}>納品日</th>
+                <th className="k-th" style={{ border: '1px solid var(--outline-variant)' }}>番号</th>
+                <th className="k-th" style={{ border: '1px solid var(--outline-variant)' }}>品名</th>
+                <th className="k-th right" style={{ border: '1px solid var(--outline-variant)' }}>数量</th>
+                <th className="k-th right" style={{ border: '1px solid var(--outline-variant)' }}>単価</th>
+                <th className="k-th right" style={{ border: '1px solid var(--outline-variant)' }}>小計</th>
               </tr></thead>
               <tbody>
                 {invoiceDetail.details?.map((d: any, i: number) => (
                   <tr key={i}>
-                    <td className="manrope-numbers" style={{ padding: '8px', border: '1px solid var(--outline-variant)', fontWeight: 300, fontSize: '0.8rem' }}>{d.delivery_date}</td>
-                    <td className="manrope-numbers" style={{ padding: '8px', border: '1px solid var(--outline-variant)', fontWeight: 300, fontSize: '0.8rem' }}>{d.delivery_number}</td>
-                    <td style={{ padding: '8px', border: '1px solid var(--outline-variant)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.8rem' }}>{d.recipe_name}</td>
-                    <td className="manrope-numbers" style={{ padding: '8px', border: '1px solid var(--outline-variant)', textAlign: 'right', fontWeight: 300, fontSize: '0.8rem' }}>{d.quantity}</td>
-                    <td className="manrope-numbers" style={{ padding: '8px', border: '1px solid var(--outline-variant)', textAlign: 'right', fontWeight: 300, fontSize: '0.8rem' }}>¥{d.unit_price?.toLocaleString()}</td>
-                    <td className="manrope-numbers" style={{ padding: '8px', border: '1px solid var(--outline-variant)', textAlign: 'right', fontWeight: 300, fontSize: '0.8rem' }}>¥{d.subtotal?.toLocaleString()}</td>
+                    <td className="k-td num" style={{ border: '1px solid var(--outline-variant)', fontSize: '0.8rem' }}>{d.delivery_date}</td>
+                    <td className="k-td num" style={{ border: '1px solid var(--outline-variant)', fontSize: '0.8rem' }}>{d.delivery_number}</td>
+                    <td className="k-td" style={{ border: '1px solid var(--outline-variant)', fontSize: '0.8rem' }}>{d.recipe_name}</td>
+                    <td className="k-td num right" style={{ border: '1px solid var(--outline-variant)', fontSize: '0.8rem' }}>{d.quantity}</td>
+                    <td className="k-td num right" style={{ border: '1px solid var(--outline-variant)', fontSize: '0.8rem' }}>¥{d.unit_price?.toLocaleString()}</td>
+                    <td className="k-td num right" style={{ border: '1px solid var(--outline-variant)', fontSize: '0.8rem' }}>¥{d.subtotal?.toLocaleString()}</td>
                   </tr>
                 ))}
                 <tr style={{ fontWeight: 'bold', background: 'var(--surface-container-high)' }}>
-                  <td colSpan={5} style={{ padding: '8px', border: '1px solid var(--outline-variant)', textAlign: 'right', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 500, fontSize: '0.8rem' }}>請求金額</td>
-                  <td className="manrope-numbers" style={{ padding: '8px', border: '1px solid var(--outline-variant)', textAlign: 'right', fontSize: '1.1rem', color: 'var(--accent-green)', fontWeight: 500 }}>¥{invoiceDetail.total_amount?.toLocaleString()}</td>
+                  <td colSpan={5} className="k-td right" style={{ border: '1px solid var(--outline-variant)', fontWeight: 500, fontSize: '0.8rem' }}>請求金額</td>
+                  <td className="k-td num right" style={{ border: '1px solid var(--outline-variant)', fontSize: '1.1rem', color: 'var(--accent-green)', fontWeight: 500 }}>¥{invoiceDetail.total_amount?.toLocaleString()}</td>
                 </tr>
               </tbody>
             </table>
@@ -164,38 +161,39 @@ export default function InvoiceGenerator() {
 
       {invoices.length > 0 && (
         <div style={{ marginTop: '2rem' }}>
-          <h3 style={{ fontSize: '0.65rem', fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: '0.12em', textTransform: 'uppercase' as const }}>過去の請求書一覧</h3>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
-              <thead><tr style={{ borderBottom: '1px solid var(--outline-variant)', color: 'var(--text-secondary)' }}>
-                <th style={{ padding: '12px 8px', fontSize: '0.625rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' as const, textAlign: 'left' }}>ID</th>
-                <th style={{ padding: '12px 8px', fontSize: '0.625rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' as const, textAlign: 'left' }}>請求先</th>
-                <th style={{ padding: '12px 8px', fontSize: '0.625rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' as const, textAlign: 'left' }}>期間</th>
-                <th style={{ padding: '12px 8px', fontSize: '0.625rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' as const, textAlign: 'right' }}>金額</th>
-                <th style={{ padding: '12px 8px', fontSize: '0.625rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' as const, textAlign: 'left' }}>状態</th>
-                <th style={{ padding: '12px 8px', fontSize: '0.625rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' as const, textAlign: 'right' }}>操作</th>
+          <h3 className="k-subheading" style={{ fontSize: '0.65rem', fontWeight: 600 }}>過去の請求書一覧</h3>
+          <div className="k-table-wrapper">
+            <table className="k-table">
+              <thead><tr>
+                <th className="k-th">ID</th>
+                <th className="k-th">請求先</th>
+                <th className="k-th">期間</th>
+                <th className="k-th right">金額</th>
+                <th className="k-th">状態</th>
+                <th className="k-th right">操作</th>
               </tr></thead>
               <tbody>{invoices.map(inv => (
-                <tr key={inv.id} style={{ borderBottom: '1px solid rgba(169,180,185,0.08)' }}>
-                  <td className="manrope-numbers" style={{ padding: '10px 8px', fontWeight: 300 }}>{inv.id}</td>
-                  <td style={{ padding: '10px 8px', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300 }}>{inv.destination_name}</td>
-                  <td className="manrope-numbers" style={{ padding: '10px 8px', fontWeight: 300, fontSize: '0.8rem' }}>{inv.target_start_date}〜{inv.target_end_date}</td>
-                  <td className="manrope-numbers" style={{ padding: '10px 8px', color: 'var(--primary-color)', fontWeight: 400, textAlign: 'right' }}>¥{inv.total_amount?.toLocaleString()}</td>
-                  <td style={{ padding: '10px 8px', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.8rem' }}>
+                <tr key={inv.id}>
+                  <td className="k-td num">{inv.id}</td>
+                  <td className="k-td">{inv.destination_name}</td>
+                  <td className="k-td num" style={{ fontSize: '0.8rem' }}>{inv.target_start_date}〜{inv.target_end_date}</td>
+                  <td className="k-td num right" style={{ color: 'var(--primary-color)', fontWeight: 400 }}>¥{inv.total_amount?.toLocaleString()}</td>
+                  <td className="k-td" style={{ fontSize: '0.8rem' }}>
                     <select 
                       value={inv.status} 
                       onChange={e => handleUpdateStatus(inv.id, e.target.value)}
-                      style={{ padding: '4px', background: 'transparent', color: 'var(--text-primary)', border: '1px solid var(--outline-variant)', borderRadius: '2px', fontSize: '0.75rem', fontFamily: "'Noto Sans JP', sans-serif" }}
+                      className="k-select"
+                      style={{ padding: '4px', border: '1px solid var(--outline-variant)', borderRadius: '2px', fontSize: '0.75rem', width: 'auto' }}
                     >
                       <option value="未払い">未払い</option>
                       <option value="支払済み" style={{ color: 'var(--accent-green)' }}>支払済み</option>
                     </select>
                   </td>
-                  <td style={{ padding: '10px 8px', textAlign: 'right' }}>
+                  <td className="k-td right">
                     <div style={{ display: 'flex', gap: '4px', justifyContent: 'flex-end' }}>
-                      <button onClick={() => fetchInvoiceDetail(inv.id)} style={{ ...btnStyle, background: 'var(--primary-color)', color: 'var(--on-primary)', padding: '6px 14px', minHeight: '36px', fontSize: '0.7rem', letterSpacing: '0.08em' }}>表示</button>
-                      <button onClick={() => handleDownloadPdf(inv.id)} style={{ ...btnStyle, background: 'var(--accent-green)', color: 'white', padding: '6px 10px', minHeight: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="PDFダウンロード"><span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>download</span></button>
-                      <button onClick={() => handleDeleteInvoice(inv.id)} style={{ ...btnStyle, background: 'var(--error)', color: 'white', padding: '6px 10px', minHeight: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="削除"><span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>delete</span></button>
+                      <button onClick={() => fetchInvoiceDetail(inv.id)} className="k-btn k-btn-primary" style={{ padding: '6px 14px', minHeight: '36px', fontSize: '0.7rem' }}>表示</button>
+                      <button onClick={() => handleDownloadPdf(inv.id)} className="k-btn k-btn-success" style={{ padding: '6px 10px', minHeight: '36px' }} title="PDFダウンロード"><span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>download</span></button>
+                      <button onClick={() => handleDeleteInvoice(inv.id)} className="k-btn k-btn-danger" style={{ padding: '6px 10px', minHeight: '36px' }} title="削除"><span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>delete</span></button>
                     </div>
                   </td>
                 </tr>

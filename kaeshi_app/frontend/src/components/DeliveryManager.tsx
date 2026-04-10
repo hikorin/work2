@@ -98,73 +98,70 @@ export default function DeliveryManager() {
     }
   };
 
-  const inputStyle = { padding: '10px', borderRadius: '0', border: 'none', borderBottom: '1px solid var(--outline-variant)', background: 'transparent', color: 'var(--text-primary)', width: '100%', boxSizing: 'border-box' as const, fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300 as const, fontSize: '0.875rem', outline: 'none', transition: 'border-color 0.2s' };
-  const btnStyle = { border: 'none', borderRadius: '2px', cursor: 'pointer', fontWeight: 300 as const, minHeight: '44px', fontFamily: "'Noto Sans JP', sans-serif", fontSize: '0.75rem', letterSpacing: '0.08em', transition: 'opacity 0.2s' };
-
   return (
-    <div className="glass-panel" style={{ minHeight: '60vh' }}>
+    <div className="k-card" style={{ minHeight: '60vh' }}>
       <div className="no-print">
-        <h2 style={{ color: 'var(--text-primary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 700, fontSize: '1.1rem', letterSpacing: '-0.02em' }}>{editingId ? '納品編集' : '納品登録'}</h2>
-        <p style={{ color: 'var(--text-secondary)', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase' as const }}>{editingId ? 'Edit Delivery' : 'Delivery Records & Logistics'}</p>
+        <h2 className="k-heading">{editingId ? '納品編集' : '納品登録'}</h2>
+        <p className="k-subheading">{editingId ? 'Edit Delivery' : 'Delivery Records & Logistics'}</p>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '0.5rem', marginBottom: '1rem' }}>
-          <input style={inputStyle} type="date" value={deliveryDate} onChange={e => setDeliveryDate(e.target.value)} onKeyDown={e => e.preventDefault()} />
-          <select style={inputStyle} value={destId} onChange={e => setDestId(Number(e.target.value))}>
+          <input className="k-input" type="date" value={deliveryDate} onChange={e => setDeliveryDate(e.target.value)} onKeyDown={e => e.preventDefault()} />
+          <select className="k-select" value={destId} onChange={e => setDestId(Number(e.target.value))}>
             <option value="">納品先を選択...</option>
             {destinations.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
           </select>
         </div>
 
-        <h3 style={{ fontSize: '0.65rem', fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: '0.12em', textTransform: 'uppercase' as const }}>納品品目</h3>
+        <h3 className="k-subheading" style={{ fontSize: '0.65rem', fontWeight: 600 }}>納品品目</h3>
         {items.map((item, idx) => (
           <div key={idx} style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', gap: '0.5rem', marginBottom: '0.5rem' }}>
-            <select style={inputStyle} value={item.recipe_id} onChange={e => updateRow(idx, 'recipe_id', Number(e.target.value))}>
+            <select className="k-select" value={item.recipe_id} onChange={e => updateRow(idx, 'recipe_id', Number(e.target.value))}>
               <option value="">品名を選択...</option>
               {recipes.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
             </select>
-            <input style={{ ...inputStyle, width: '80px' }} type="number" value={item.quantity} onChange={e => updateRow(idx, 'quantity', Number(e.target.value))} min={1} />
-            <button onClick={() => removeRow(idx)} style={{ ...btnStyle, background: 'transparent', color: 'var(--error)', padding: '0 10px' }}><span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>delete</span></button>
+            <input className="k-input" style={{ width: '80px' }} type="number" value={item.quantity} onChange={e => updateRow(idx, 'quantity', Number(e.target.value))} min={1} />
+            <button onClick={() => removeRow(idx)} className="k-btn k-btn-icon k-btn-danger"><span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>delete</span></button>
           </div>
         ))}
-        <button onClick={addRow} style={{ ...btnStyle, background: 'var(--surface-container)', color: 'var(--text-primary)', padding: '8px 16px', marginBottom: '1rem' }}>＋ 品目追加</button>
+        <button onClick={addRow} className="k-btn k-btn-secondary" style={{ padding: '8px 16px', marginBottom: '1rem' }}>＋ 品目追加</button>
         <br />
         
         {editingId ? (
           <div style={{ display: 'flex', gap: '1rem' }}>
-            <button onClick={handleUpdate} style={{ ...btnStyle, background: 'var(--primary-color)', color: 'var(--on-primary)', padding: '12px 24px', flex: 1 }}>記録を更新する</button>
-            <button onClick={resetForm} style={{ ...btnStyle, background: 'var(--surface-container-high)', color: 'var(--text-primary)', padding: '12px 24px', flex: 1, border: '1px solid var(--outline-variant)' }}>キャンセル</button>
+            <button onClick={handleUpdate} className="k-btn k-btn-primary" style={{ padding: '12px 24px', flex: 1 }}>記録を更新する</button>
+            <button onClick={resetForm} className="k-btn k-btn-secondary" style={{ padding: '12px 24px', flex: 1 }}>キャンセル</button>
           </div>
         ) : (
-          <button onClick={handleSubmit} style={{ ...btnStyle, background: 'var(--primary-color)', color: 'var(--on-primary)', padding: '12px 24px', width: '100%' }}>納品を登録する</button>
+          <button onClick={handleSubmit} className="k-btn k-btn-primary" style={{ padding: '12px 24px', width: '100%' }}>納品を登録する</button>
         )}
 
         <hr style={{ borderColor: 'rgba(169,180,185,0.15)', margin: '2rem 0', borderStyle: 'solid', borderWidth: '0 0 1px 0' }} />
       </div>
 
-      <h3 style={{ fontSize: '0.65rem', fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: '0.12em', textTransform: 'uppercase' as const }}>納品履歴</h3>
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
-          <thead><tr style={{ borderBottom: '1px solid var(--outline-variant)', color: 'var(--text-secondary)' }}>
-            <th style={{ padding: '12px 8px', fontSize: '0.625rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' as const, textAlign: 'left' }}>番号</th>
-            <th style={{ padding: '12px 8px', fontSize: '0.625rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' as const, textAlign: 'left' }}>日付</th>
-            <th style={{ padding: '12px 8px', fontSize: '0.625rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' as const, textAlign: 'left' }}>納品先</th>
-            <th style={{ padding: '12px 8px', fontSize: '0.625rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' as const, textAlign: 'left' }}>品目</th>
-            <th style={{ padding: '12px 8px', fontSize: '0.625rem', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' as const, textAlign: 'right' }}>操作</th>
+      <h3 className="k-subheading" style={{ fontSize: '0.65rem', fontWeight: 600 }}>納品履歴</h3>
+      <div className="k-table-wrapper">
+        <table className="k-table">
+          <thead><tr>
+            <th className="k-th">番号</th>
+            <th className="k-th">日付</th>
+            <th className="k-th">納品先</th>
+            <th className="k-th">品目</th>
+            <th className="k-th" style={{ textAlign: 'right' }}>操作</th>
           </tr></thead>
           <tbody>{deliveries.map((d: any) => (
-            <tr key={d.id} style={{ borderBottom: '1px solid rgba(169,180,185,0.08)' }}>
-              <td className="manrope-numbers" style={{ padding: '10px 8px', color: 'var(--primary-color)', fontWeight: 400 }}>{d.delivery_number}</td>
-              <td className="manrope-numbers" style={{ padding: '10px 8px', fontWeight: 300 }}>{d.delivery_date}</td>
-              <td style={{ padding: '10px 8px', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300 }}>{d.destination_name}</td>
-              <td style={{ padding: '10px 8px', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.8rem' }}>{d.items?.map((i: any) => `${i.recipe_name}×${i.quantity}`).join(', ')}</td>
-              <td style={{ padding: '10px 8px', textAlign: 'right' }}>
+            <tr key={d.id}>
+              <td className="k-td num" style={{ color: 'var(--primary-color)', fontWeight: 400 }}>{d.delivery_number}</td>
+              <td className="k-td num">{d.delivery_date}</td>
+              <td className="k-td">{d.destination_name}</td>
+              <td className="k-td" style={{ fontSize: '0.8rem' }}>{d.items?.map((i: any) => `${i.recipe_name}×${i.quantity}`).join(', ')}</td>
+              <td className="k-td right">
                 <div style={{ display: 'flex', gap: '4px', justifyContent: 'flex-end' }}>
-                  <button onClick={() => handleDownloadPdf(d.id, d.delivery_number)} style={{ ...btnStyle, background: 'var(--accent-green)', color: 'white', padding: '4px 8px', minHeight: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="PDFダウンロード"><span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>download</span></button>
-                  <button onClick={() => window.print()} className="no-print" style={{ ...btnStyle, background: 'var(--primary-color)', color: 'white', padding: '4px 8px', minHeight: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="印刷"><span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>print</span></button>
-                  {d.invoice_id ? <span style={{ color: 'var(--text-secondary)', fontSize: '0.7rem', fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, marginLeft: '8px', alignSelf: 'center' }}>請求済</span> :
+                  <button onClick={() => handleDownloadPdf(d.id, d.delivery_number)} className="k-btn k-btn-success" style={{ padding: '4px 8px', minHeight: '32px' }} title="PDFダウンロード"><span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>download</span></button>
+                  <button onClick={() => window.print()} className="k-btn k-btn-primary no-print" style={{ padding: '4px 8px', minHeight: '32px' }} title="印刷"><span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>print</span></button>
+                  {d.invoice_id ? <span className="k-td" style={{ fontSize: '0.7rem', marginLeft: '8px', alignSelf: 'center', borderBottom: 'none' }}>請求済</span> :
                     <>
-                      <button onClick={() => handleEdit(d)} className="no-print" style={{ ...btnStyle, background: 'transparent', color: 'var(--primary-color)', padding: '4px 8px', minHeight: '32px' }}><span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>edit</span></button>
-                      <button onClick={() => handleDelete(d.id)} className="no-print" style={{ ...btnStyle, background: 'var(--error)', color: 'white', padding: '4px 8px', minHeight: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="削除"><span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>delete</span></button>
+                      <button onClick={() => handleEdit(d)} className="k-btn k-btn-icon no-print"><span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>edit</span></button>
+                      <button onClick={() => handleDelete(d.id)} className="k-btn k-btn-danger no-print" style={{ padding: '4px 8px', minHeight: '32px' }} title="削除"><span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>delete</span></button>
                     </>
                   }
                 </div>

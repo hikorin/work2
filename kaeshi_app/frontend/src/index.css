@@ -44,15 +44,17 @@ body {
 /* ===== Utility Classes ===== */
 .thin-header {
   font-family: 'Noto Sans JP', sans-serif;
-  font-weight: 700; /* Boldに変更！💪 */
+  font-weight: 700;
 }
 
 .manrope-numbers {
   font-family: 'Manrope', sans-serif;
 }
 
-/* ===== Glass Panel (Kaeshi Precision — Light) ===== */
-.glass-panel {
+/* ===== Kaeshi UI Components ===== */
+
+/* Card / Panel */
+.k-card {
   background: var(--surface-color);
   border: 1px solid var(--glass-border);
   border-radius: 2px;
@@ -61,8 +63,195 @@ body {
   transition: box-shadow 0.2s ease;
 }
 
-.glass-panel:hover {
+.k-card:hover {
   box-shadow: 0 4px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+}
+
+/* Typography */
+.k-heading {
+  color: var(--text-primary);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: -0.02em;
+  margin: 0 0 4px 0;
+}
+
+.k-subheading {
+  color: var(--text-secondary);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 300;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.k-label {
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 300;
+  margin-top: 4px;
+  display: block;
+}
+
+/* Forms */
+.k-input, .k-select {
+  padding: 10px;
+  border: none;
+  border-bottom: 1px solid var(--outline-variant);
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-primary);
+  width: 100%;
+  box-sizing: border-box;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 300;
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.k-input:focus, .k-select:focus {
+  border-bottom-color: var(--primary-color);
+}
+
+/* Buttons */
+.k-btn {
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 300;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  min-height: 44px;
+  padding: 10px 16px;
+  transition: opacity 0.2s, background-color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.k-btn:hover {
+  opacity: 0.85;
+}
+
+.k-btn-primary {
+  background: var(--primary-color);
+  color: var(--on-primary);
+}
+
+.k-btn-secondary {
+  background: var(--surface-container-high);
+  color: var(--text-primary);
+  border: 1px solid var(--outline-variant);
+}
+
+.k-btn-danger {
+  background: var(--error);
+  color: white;
+}
+
+.k-btn-success {
+  background: var(--accent-green);
+  color: white;
+}
+
+.k-btn-icon {
+  background: transparent;
+  color: var(--primary-color);
+  min-height: 32px;
+  padding: 4px 8px;
+}
+
+.k-btn-icon.k-btn-danger {
+  color: var(--error);
+  background: transparent;
+}
+
+/* Table */
+.k-table-wrapper {
+  overflow-x: auto;
+}
+
+.k-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.k-th {
+  padding: 12px 8px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: left;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--outline-variant);
+}
+
+.k-td {
+  padding: 10px 8px;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 300;
+  border-bottom: 1px solid rgba(169, 180, 185, 0.08);
+}
+
+.k-td.num {
+  font-family: 'Manrope', sans-serif;
+}
+
+.k-td.right {
+  text-align: right;
+}
+
+.k-td.center {
+  text-align: center;
+}
+
+/* Navigation */
+.k-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(169, 180, 185, 0.15);
+  display: flex;
+  justify-content: space-around;
+  padding: 4px 0;
+  z-index: 1000;
+}
+
+.k-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 6px 0;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: var(--outline);
+  font-size: 0.6rem;
+  min-height: 44px;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 300;
+  transition: color 0.2s ease;
+  letter-spacing: 0.02em;
+}
+
+.k-nav-item.active {
+  color: var(--primary-color);
+  font-weight: 500;
 }
 
 /* ===== Selection ===== */
