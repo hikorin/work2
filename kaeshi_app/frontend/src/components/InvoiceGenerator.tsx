@@ -96,8 +96,22 @@ export default function InvoiceGenerator() {
       <p className="k-subheading">Automated Invoicing & Archives</p>
 
       <div className="no-print" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1rem' }}>
-        <input className="k-input" type="date" value={startDate} onChange={e => setStartDate(e.target.value)} onKeyDown={e => e.preventDefault()} />
-        <input className="k-input" type="date" value={endDate} onChange={e => setEndDate(e.target.value)} onKeyDown={e => e.preventDefault()} />
+        <input 
+          className="k-input" 
+          type="date" 
+          value={startDate} 
+          onChange={e => setStartDate(e.target.value)} 
+          onKeyDown={e => e.preventDefault()} 
+          style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', minWidth: 0 }}
+        />
+        <input 
+          className="k-input" 
+          type="date" 
+          value={endDate} 
+          onChange={e => setEndDate(e.target.value)} 
+          onKeyDown={e => e.preventDefault()} 
+          style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', minWidth: 0 }}
+        />
         <select className="k-select" value={selectedDest} onChange={e => setSelectedDest(Number(e.target.value))}>
           <option value="">納品先を選択...</option>
           {destinations.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}

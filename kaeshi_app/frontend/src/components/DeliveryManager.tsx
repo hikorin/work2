@@ -105,7 +105,14 @@ export default function DeliveryManager() {
         <p className="k-subheading">{editingId ? 'Edit Delivery' : 'Delivery Records & Logistics'}</p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1rem' }}>
-          <input className="k-input" type="date" value={deliveryDate} onChange={e => setDeliveryDate(e.target.value)} onKeyDown={e => e.preventDefault()} />
+          <input 
+            className="k-input" 
+            type="date" 
+            value={deliveryDate} 
+            onChange={e => setDeliveryDate(e.target.value)} 
+            onKeyDown={e => e.preventDefault()} 
+            style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box', minWidth: 0 }}
+          />
           <select className="k-select" value={destId} onChange={e => setDestId(Number(e.target.value))}>
             <option value="">納品先を選択...</option>
             {destinations.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
