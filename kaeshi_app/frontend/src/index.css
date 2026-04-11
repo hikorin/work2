@@ -62,6 +62,8 @@ body {
   padding: 24px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.02);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+  overflow: hidden; /* Prevent children from poking out */
 }
 
 .k-card:hover {
@@ -100,7 +102,7 @@ body {
 
 /* Forms */
 .k-input, .k-select {
-  padding: 12px 16px;
+  padding: 10px 14px; /* Reduced from 12px 16px */
   border: 1px solid var(--outline-variant);
   border-radius: 12px;
   background: var(--surface-color);
@@ -277,6 +279,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     font-size: 0.55rem; /* Smaller labels on narrow screens */
     letter-spacing: -0.02em;
   }
+  .k-input, .k-select {
+    padding: 8px 10px; /* Even smaller padding for mobile */
+    font-size: 0.8rem;
+  }
 }
 
 @media (max-width: 360px) {
@@ -286,15 +292,23 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     padding-bottom: 74px;
   }
   .k-card {
-    padding: 8px; /* Minimized padding to maximize usable width for date inputs */
+    padding: 10px; /* Matching previous version's compact feel */
+    border-radius: 12px; /* Slightly tighter corners for small screens */
   }
   .k-nav-item {
     padding: 4px 1px;
   }
   .k-nav-item span:last-child {
     font-size: 0.5rem;
-    display: block; /* Ensure it stays visible but minimal */
+    display: block;
     white-space: nowrap;
+  }
+  .k-input, .k-select {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--outline-variant);
+    border-radius: 0;
+    padding: 8px 4px;
   }
 }
 
