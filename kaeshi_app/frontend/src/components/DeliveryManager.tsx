@@ -156,13 +156,21 @@ export default function DeliveryManager() {
               <td className="k-td" style={{ fontSize: '0.8rem' }}>{d.items?.map((i: any) => `${i.recipe_name}×${i.quantity}`).join(', ')}</td>
               <td className="k-td right">
                 <div style={{ display: 'flex', gap: '4px', justifyContent: 'flex-end' }}>
-                  <button onClick={() => handleDownloadPdf(d.id, d.delivery_number)} className="k-btn k-btn-success" style={{ padding: '4px 8px', minHeight: '32px' }} title="PDFダウンロード"><span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>download</span></button>
-                  <button onClick={() => window.print()} className="k-btn k-btn-primary no-print" style={{ padding: '4px 8px', minHeight: '32px' }} title="印刷"><span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>print</span></button>
-                  {d.invoice_id ? <span className="k-td" style={{ fontSize: '0.7rem', marginLeft: '8px', alignSelf: 'center', borderBottom: 'none' }}>請求済</span> :
-                    <>
-                      <button onClick={() => handleEdit(d)} className="k-btn k-btn-icon no-print"><span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>edit</span></button>
-                      <button onClick={() => handleDelete(d.id)} className="k-btn k-btn-danger no-print" style={{ padding: '4px 8px', minHeight: '32px' }} title="削除"><span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>delete</span></button>
-                    </>
+                  <button onClick={() => handleDownloadPdf(d.id, d.delivery_number)} className="k-btn k-btn-icon k-btn-success" title="PDFダウンロード"><span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>download</span></button>
+                  <button onClick={() => window.print()} className="k-btn k-btn-icon k-btn-primary no-print" title="印刷"><span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>print</span></button>
+                  {d.invoice_id ? 
+                    <span style={{ 
+                      fontSize: '0.65rem', 
+                      background: 'var(--surface-container-high)', 
+                      color: 'var(--text-secondary)', 
+                      padding: '4px 10px', 
+                      borderRadius: '12px',
+                      fontWeight: 500
+                    }}>請求済</span> :
+                    <div style={{ display: 'flex', gap: '4px' }}>
+                      <button onClick={() => handleEdit(d)} className="k-btn k-btn-icon no-print" title="編集"><span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>edit_note</span></button>
+                      <button onClick={() => handleDelete(d.id)} className="k-btn k-btn-icon k-btn-danger no-print" title="削除"><span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>delete_forever</span></button>
+                    </div>
                   }
                 </div>
               </td>

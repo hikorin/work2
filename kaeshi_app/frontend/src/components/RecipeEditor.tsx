@@ -138,7 +138,7 @@ export default function RecipeEditor() {
               <button onClick={() => handleSelectRecipe(r)} className="k-btn" style={{ flex: 1, textAlign: 'left', background: selectedRecipeId === r.id ? 'var(--primary-container)' : 'var(--surface-container-low)', border: selectedRecipeId === r.id ? '1px solid var(--primary-color)' : '1px solid rgba(169,180,185,0.15)', color: 'var(--text-primary)', justifyContent: 'flex-start' }}>
                 {r.name} <span style={{ color: 'var(--text-secondary)', fontSize: '0.75rem' }}>({r.delivery_batches}回分)</span>
               </button>
-              <button onClick={() => handleDeleteRecipe(r.id)} className="k-btn k-btn-icon k-btn-danger" style={{ border: '1px solid rgba(169,180,185,0.15)', minHeight: '44px' }}><span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>delete</span></button>
+              <button onClick={() => handleDeleteRecipe(r.id)} className="k-btn k-btn-icon k-btn-danger" title="削除"><span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>delete</span></button>
             </div>
           ))}
         </div>
@@ -178,7 +178,7 @@ export default function RecipeEditor() {
                       <tr key={it.id}>
                         <td className="k-td">{it.name}</td>
                         <td className="k-td num">{it.quantity}{it.unit_type || ''}</td>
-                        <td className="k-td right"><button onClick={() => handleDeleteItem(it.id)} className="k-btn k-btn-icon k-btn-danger" style={{ minHeight: '36px' }}><span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>delete</span></button></td>
+                        <td className="k-td right"><button onClick={() => handleDeleteItem(it.id)} className="k-btn k-btn-icon k-btn-danger" title="削除"><span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>delete</span></button></td>
                       </tr>
                     ))}</tbody>
                   </table>

@@ -198,9 +198,9 @@ export default function InvoiceGenerator() {
                   </td>
                   <td className="k-td right">
                     <div style={{ display: 'flex', gap: '4px', justifyContent: 'flex-end' }}>
-                      <button onClick={() => fetchInvoiceDetail(inv.id)} className="k-btn k-btn-primary" style={{ padding: '6px 14px', minHeight: '36px', fontSize: '0.7rem' }}>表示</button>
-                      <button onClick={() => handleDownloadPdf(inv.id)} className="k-btn k-btn-success" style={{ padding: '6px 10px', minHeight: '36px' }} title="PDFダウンロード"><span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>download</span></button>
-                      <button onClick={() => handleDeleteInvoice(inv.id)} className="k-btn k-btn-danger" style={{ padding: '6px 10px', minHeight: '36px' }} title="削除"><span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>delete</span></button>
+                      <button onClick={() => fetchInvoiceDetail(inv.id)} className="k-btn k-btn-icon k-btn-primary" title="表示"><span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>visibility</span></button>
+                      <button onClick={() => handleDownloadPdf(inv.id)} className="k-btn k-btn-icon k-btn-success" title="PDFダウンロード"><span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>download</span></button>
+                      <button onClick={() => handleDeleteInvoice(inv.id)} className="k-btn k-btn-icon k-btn-danger" title="削除"><span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>delete</span></button>
                     </div>
                   </td>
                 </tr>

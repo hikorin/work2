@@ -93,8 +93,8 @@ export default function IngredientsManager() {
               <td className="k-td center" style={{ fontSize: '0.625rem', color: 'var(--text-secondary)', letterSpacing: '0.08em', textTransform: 'uppercase' as const }}>{i.unit_type}</td>
               <td className="k-td num right" style={{ fontSize: '0.875rem' }}>¥{i.unit_price?.toFixed(2)}/{i.unit_type}</td>
               <td className="k-td right">
-                <button onClick={() => handleEditIngredient(i)} className="k-btn k-btn-icon" style={{ fontSize: '0.8rem' }}><span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>edit</span></button>
-                <button onClick={() => handleDeleteIngredient(i.id)} className="k-btn k-btn-icon k-btn-danger" style={{ fontSize: '0.8rem' }}><span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>delete</span></button>
+                <button onClick={() => handleEditIngredient(i)} className="k-btn k-btn-icon" title="編集"><span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>edit</span></button>
+                <button onClick={() => handleDeleteIngredient(i.id)} className="k-btn k-btn-icon k-btn-danger" title="削除"><span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>delete</span></button>
               </td>
             </tr>
           ))}</tbody>
@@ -122,8 +122,8 @@ export default function IngredientsManager() {
               <td className="k-td" style={{ fontSize: '0.875rem' }}>{d.name}</td>
               <td className="k-td" style={{ fontSize: '0.875rem' }}>{d.address}</td>
               <td className="k-td right">
-                <button onClick={() => { setEditDestId(d.id); setDestName(d.name); setDestAddr(d.address); }} className="k-btn k-btn-icon"><span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>edit</span></button>
-                <button onClick={() => handleDeleteDest(d.id)} className="k-btn k-btn-icon k-btn-danger"><span className="material-symbols-outlined" style={{ fontSize: '1rem' }}>delete</span></button>
+                <button onClick={() => { setEditDestId(d.id); setDestName(d.name); setDestAddr(d.address); }} className="k-btn k-btn-icon" title="編集"><span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>edit</span></button>
+                <button onClick={() => handleDeleteDest(d.id)} className="k-btn k-btn-icon k-btn-danger" title="削除"><span className="material-symbols-outlined" style={{ fontSize: '1.1rem' }}>delete</span></button>
               </td>
             </tr>
           ))}</tbody>
