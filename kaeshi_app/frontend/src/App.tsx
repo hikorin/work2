@@ -17,35 +17,38 @@ const tabs = [
 function App() {
   const [activeTab, setActiveTab] = useState('deliveries');
   const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [touchStartY, setTouchStartY] = useState<number | null>(null);
 
   const minSwipeDistance = 70;
 
   const onTouchStart = (e: React.TouchEvent) => {
-    setTouchEnd(null);
     setTouchStart(e.targetTouches[0].clientX);
+    setTouchStartY(e.targetTouches[0].clientY);
   };
 
-  const onTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStart === null || touchStartY === null) return;
+    const endX = e.changedTouches[0].clientX;
+    const endY = e.changedTouches[0].clientY;
     
-    const currentIndex = tabs.findIndex(t => t.key === activeTab);
-    if (isLeftSwipe && currentIndex < tabs.length - 1) {
-      setActiveTab(tabs[currentIndex + 1].key);
-    } else if (isRightSwipe && currentIndex > 0) {
-      setActiveTab(tabs[currentIndex - 1].key);
+    const deltaX = touchStart - endX;
+    const deltaY = touchStartY - endY;
+    
+    // horizontal swipe only if horizontal movement is greater than vertical movement
+    if (Math.abs(deltaX) > minSwipeDistance && Math.abs(deltaX) > Math.abs(deltaY) * 2) {
+      const currentIndex = tabs.findIndex(t => t.key === activeTab);
+      if (deltaX > 0 && currentIndex < tabs.length - 1) {
+        setActiveTab(tabs[currentIndex + 1].key);
+      } else if (deltaX < 0 && currentIndex > 0) {
+        setActiveTab(tabs[currentIndex - 1].key);
+      }
     }
+    setTouchStart(null);
+    setTouchStartY(null);
   };
 
   return (
-    <div style={{ minHeight: '100vh', paddingBottom: '70px', background: 'var(--bg-color)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--bg-color)' }}>
       {/* Header - Fixed/Sticky with Logo Background Match */}
       <header className="no-print" style={{ 
         padding: '0.8rem 1rem', 
@@ -53,7 +56,7 @@ function App() {
         borderBottom: '1px solid rgba(169,180,185,0.15)',
         position: 'sticky',
         top: 0,
-        backgroundColor: '#FFFFFF', // Matches logo background
+        backgroundColor: '#FFFFFF',
         zIndex: 1000,
         boxShadow: '0 2px 10px rgba(0,0,0,0.02)'
       }}>
@@ -67,10 +70,9 @@ function App() {
 
       {/* Main Content with Swipe capability */}
       <main 
+        className="k-main"
         onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
-        style={{ padding: '0 0.5rem', touchAction: 'pan-y' }}
       >
         {/* Page title */}
         <div className="no-print" style={{ padding: '1rem 0.5rem 0' }}>
@@ -82,7 +84,7 @@ function App() {
           </p>
         </div>
         
-        <div style={{ animation: 'fadeIn 0.3s ease-in-out' }}>
+        <div key={activeTab} style={{ animation: 'fadeIn 0.3s ease-in-out' }}>
           {activeTab === 'deliveries' && <DeliveryManager />}
           {activeTab === 'invoices' && <InvoiceGenerator />}
           {activeTab === 'recipes' && <RecipeEditor />}
@@ -92,11 +94,14 @@ function App() {
       </main>
 
       {/* Bottom Navigation (Mobile First) */}
-      <nav className="k-nav no-print">
+      <nav className="k-nav no-print" style={{ zIndex: 1100 }}>
         {tabs.map(tab => (
           <button
             key={tab.key}
-            onClick={() => setActiveTab(tab.key)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setActiveTab(tab.key);
+            }}
             className={`k-nav-item ${activeTab === tab.key ? 'active' : ''}`}
           >
             <span className="material-symbols-outlined" style={{ fontSize: '1.2rem' }}>{tab.icon}</span>

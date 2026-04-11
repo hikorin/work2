@@ -64,7 +64,7 @@ export default function IngredientsManager() {
     <div className="k-card" style={{ minHeight: '60vh' }}>
       <h2 className="k-heading">原材料マスター管理</h2>
       <p className="k-subheading">Raw Material Master Management</p>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '0.5rem', marginBottom: '1rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1rem' }}>
         <input className="k-input" type="text" placeholder="例: 特選醤油" value={name} onChange={e => setName(e.target.value)} />
         <input className="k-input" type="number" placeholder="価格(税込)" value={price || ''} onChange={e => setPrice(Number(e.target.value))} />
         <input className="k-input" type="number" placeholder="量" value={qty || ''} onChange={e => setQty(Number(e.target.value))} />
@@ -105,7 +105,7 @@ export default function IngredientsManager() {
 
       <h2 className="k-heading">納入先マスター</h2>
       <p className="k-subheading">Delivery Destinations</p>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.5rem', marginBottom: '1rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1rem' }}>
         <input className="k-input" type="text" placeholder="店舗名" value={destName} onChange={e => setDestName(e.target.value)} />
         <input className="k-input" type="text" placeholder="住所" value={destAddr} onChange={e => setDestAddr(e.target.value)} />
         <button onClick={handleSaveDest} className="k-btn k-btn-primary">{editDestId ? '更新' : '＋ 追加'}</button>

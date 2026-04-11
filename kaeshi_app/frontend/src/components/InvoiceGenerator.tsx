@@ -95,7 +95,7 @@ export default function InvoiceGenerator() {
       <h2 className="k-heading">請求書作成</h2>
       <p className="k-subheading">Automated Invoicing & Archives</p>
 
-      <div className="no-print" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.5rem', marginTop: '1rem' }}>
+      <div className="no-print" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1rem' }}>
         <input className="k-input" type="date" value={startDate} onChange={e => setStartDate(e.target.value)} onKeyDown={e => e.preventDefault()} />
         <input className="k-input" type="date" value={endDate} onChange={e => setEndDate(e.target.value)} onKeyDown={e => e.preventDefault()} />
         <select className="k-select" value={selectedDest} onChange={e => setSelectedDest(Number(e.target.value))}>

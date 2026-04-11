@@ -104,7 +104,7 @@ export default function DeliveryManager() {
         <h2 className="k-heading">{editingId ? '納品編集' : '納品登録'}</h2>
         <p className="k-subheading">{editingId ? 'Edit Delivery' : 'Delivery Records & Logistics'}</p>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '0.5rem', marginBottom: '1rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1rem' }}>
           <input className="k-input" type="date" value={deliveryDate} onChange={e => setDeliveryDate(e.target.value)} onKeyDown={e => e.preventDefault()} />
           <select className="k-select" value={destId} onChange={e => setDestId(Number(e.target.value))}>
             <option value="">納品先を選択...</option>
@@ -114,7 +114,7 @@ export default function DeliveryManager() {
 
         <h3 className="k-subheading" style={{ fontSize: '0.65rem', fontWeight: 600 }}>納品品目</h3>
         {items.map((item, idx) => (
-          <div key={idx} style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', gap: '0.5rem', marginBottom: '0.5rem' }}>
+          <div key={idx} className="k-grid-responsive" style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', gap: '0.5rem', marginBottom: '0.5rem' }}>
             <select className="k-select" value={item.recipe_id} onChange={e => updateRow(idx, 'recipe_id', Number(e.target.value))}>
               <option value="">品名を選択...</option>
               {recipes.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}

@@ -98,7 +98,7 @@ export default function RecipeEditor() {
 
   return (
     <div className="k-card" style={{ minHeight: '80vh' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+      <div className="k-grid-responsive" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
         {/* Left */}
         <div>
           <h2 className="k-heading">{selectedRecipeId ? 'レシピ編集' : 'レシピ登録'}</h2>
@@ -150,7 +150,7 @@ export default function RecipeEditor() {
           {selectedRecipeId ? (<>
             {selectedCost && (
               <div style={{ background: 'var(--primary-container)', border: '1px solid rgba(86,94,116,0.15)', padding: '14px', borderRadius: '2px', marginBottom: '1.5rem' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                <div className="k-grid-responsive" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                   <div><span className="k-subheading" style={{ fontWeight: 600 }}>1回の原価</span><br /><span className="num" style={{ fontWeight: 300 }}>¥{selectedCost.batch_cost?.toFixed(0)}</span></div>
                   <div><span className="k-subheading" style={{ fontWeight: 600 }}>1杯の原価</span><br /><span className="num" style={{ color: 'var(--primary-dim)', fontSize: '1.3rem', fontWeight: 400 }}>¥{selectedCost.bowl_cost?.toFixed(2)}</span></div>
                   <div><span className="k-subheading" style={{ fontWeight: 600 }}>納品原価(梱包込)</span><br /><span className="num" style={{ fontWeight: 300 }}>¥{selectedCost.delivery_cost?.toFixed(0)}</span></div>
@@ -187,7 +187,7 @@ export default function RecipeEditor() {
             )}
             <div style={{ background: 'var(--surface-container-low)', padding: '14px', borderRadius: '2px', border: '1px solid rgba(169,180,185,0.1)' }}>
               <h3 className="k-subheading" style={{ marginTop: 0, fontSize: '0.65rem', fontWeight: 600 }}>材料追加</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
+              <div className="k-grid-responsive" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '8px' }}>
                 <select value={itemType} onChange={e => setItemType(e.target.value)} className="k-select">
                   <option value="ingredient">原材料</option><option value="recipe">別レシピ</option>
                 </select>
