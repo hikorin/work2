@@ -56,6 +56,16 @@ def generate_invoice_pdf(invoice_data: dict, output_path: str):
     c.setFont(font, 20)
     c.drawCentredString(width / 2, height - 20 * mm, "請求書")
 
+    # 請求書番号と自社情報（右上に配置）
+    c.setFont(font, 10)
+    c.drawRightString(width - 20 * mm, height - 30 * mm, f"請求書番号: {invoice_data.get('invoice_number', '---')}")
+    c.drawRightString(width - 20 * mm, height - 35 * mm, f"発行日: {datetime.now().strftime('%Y年%m月%d日')}")
+    
+    y_info = height - 45 * mm
+    c.drawRightString(width - 20 * mm, y_info, invoice_data.get("company_name", ""))
+    c.drawRightString(width - 20 * mm, y_info - 5 * mm, invoice_data.get("company_address", ""))
+    c.drawRightString(width - 20 * mm, y_info - 10 * mm, f"TEL: {invoice_data.get('company_phone', '')}")
+
     # 宛先
     c.setFont(font, 12)
     c.drawString(20 * mm, height - 40 * mm, f"宛先: {invoice_data['destination_name']} 様")
@@ -79,17 +89,24 @@ def generate_invoice_pdf(invoice_data: dict, output_path: str):
     # 明細行
     y -= 10 * mm
     for item in invoice_data["details"]:
-        if y < 20 * mm:  # 改ページ処理（簡易版）
+        if y < 40 * mm:  # 振込先エリアを確保するため、少し早めに改ページ
             c.showPage()
             c.setFont(font, 10)
             y = height - 20 * mm
         
         c.drawString(20 * mm, y, item["delivery_date"])
-        c.drawString(50 * mm, y, item["recipe_name"][:20]) # 名前が長すぎる場合はカット
+        c.drawString(50 * mm, y, item["recipe_name"][:20])
         c.drawString(100 * mm, y, f"{item['quantity']:,}")
         c.drawString(120 * mm, y, f"{item['unit_price']:,}")
         c.drawString(150 * mm, y, f"{item['subtotal']:,}")
         y -= 7 * mm
+
+    # 振込先情報（下部に配置）
+    y_bank = 30 * mm
+    c.line(20 * mm, y_bank + 5 * mm, width - 20 * mm, y_bank + 5 * mm)
+    c.setFont(font, 10)
+    c.drawString(20 * mm, y_bank, "【振込先】")
+    c.drawString(40 * mm, y_bank, invoice_data.get("company_bank", ""))
 
     c.save()
     return output_path
@@ -107,6 +124,13 @@ def generate_delivery_pdf(delivery_data: dict, output_path: str):
     c.setFont(font, 10)
     c.drawRightString(width - 20 * mm, height - 30 * mm, f"納品番号: {delivery_data['delivery_number']}")
     c.drawRightString(width - 20 * mm, height - 35 * mm, f"納品日: {delivery_data['delivery_date']}")
+
+    # 自社情報（右上に配置）
+    company = delivery_data.get("company", {})
+    y_info = height - 45 * mm
+    c.drawRightString(width - 20 * mm, y_info, company.get("name", ""))
+    c.drawRightString(width - 20 * mm, y_info - 5 * mm, company.get("address", ""))
+    c.drawRightString(width - 20 * mm, y_info - 10 * mm, f"TEL: {company.get('phone', '')}")
 
     # 宛先
     c.setFont(font, 14)

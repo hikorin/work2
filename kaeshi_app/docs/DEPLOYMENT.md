@@ -38,6 +38,23 @@ git commit -m "feat: deploy latest version to production"
 git push origin debug2
 ```
 
+## 4. Windows (PowerShell) での注意点
+PowerShell を使用してデプロイ作業を行う際、環境によっては以下のエラーが発生することがあります。その場合の対処法をまとめました。
+
+### gcloud コマンドの呼び出し
+PowerShell の実行ポリシー（Execution Policy）の設定により、標準の `gcloud` コマンド（.ps1 スクリプト）がブロックされる場合があります。その際は、拡張子を明示した **`gcloud.cmd`** を直接呼び出すことで実行可能です。
+
+### コマンド連結の記法
+PowerShell の古いバージョンでは、Bash のように `&&` でコマンドを連結することができません。複数のコマンドを一行で連続実行したい場合は、セミコロン **`;`** を使用してください。
+
+### 実行例
+PowerShell でデプロイ設定を確認しつつ実行する例です：
+
+```powershell
+# gcloud.cmd を使用してプロジェクト設定とデプロイを連続実行
+gcloud.cmd config set project pokioapps; gcloud.cmd run deploy kaeshi-app --source . --region asia-northeast1 --platform managed --quiet
+```
+
 ---
 **作成日**: 2026-04-07
 **管理者**: hiko.izaki@gmail.com

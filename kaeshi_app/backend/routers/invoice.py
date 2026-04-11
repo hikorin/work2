@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
+from datetime import date
 import models, database, schemas
 import logging
 import os
@@ -18,6 +19,14 @@ def get_db():
     finally:
         db.close()
 
+def generate_invoice_number(start_date: date, db: Session) -> str:
+    """INV-YYYYMM-NNN 形式の請求書番号を自動生成"""
+    prefix = f"INV-{start_date.strftime('%Y%m')}"
+    count = db.query(models.Invoice).filter(
+        models.Invoice.invoice_number.like(f"{prefix}-%")
+    ).count()
+    return f"{prefix}-{str(count + 1).zfill(3)}"
+
 @router.get("/")
 def get_invoices(db: Session = Depends(get_db)):
     invoices = db.query(models.Invoice).all()
@@ -26,6 +35,7 @@ def get_invoices(db: Session = Depends(get_db)):
         dest = db.query(models.Destination).filter(models.Destination.id == inv.destination_id).first()
         result.append({
             "id": inv.id,
+            "invoice_number": inv.invoice_number,
             "destination_name": dest.name if dest else "不明",
             "target_start_date": str(inv.target_start_date),
             "target_end_date": str(inv.target_end_date),
@@ -56,6 +66,7 @@ def get_invoice_detail(invoice_id: int, db: Session = Depends(get_db)):
             })
     return {
         "invoice_id": invoice.id,
+        "invoice_number": invoice.invoice_number,
         "destination_name": dest.name if dest else "不明",
         "target_start_date": str(invoice.target_start_date),
         "target_end_date": str(invoice.target_end_date),
@@ -68,6 +79,19 @@ def get_invoice_detail(invoice_id: int, db: Session = Depends(get_db)):
 def get_invoice_pdf(invoice_id: int, db: Session = Depends(get_db)):
     # 請求書詳細を取得（既存のロジックを流用）
     data = get_invoice_detail(invoice_id, db)
+    
+    # 自社情報を取得
+    company = db.query(models.CompanyInfo).first()
+    if company:
+        data["company_name"] = company.name
+        data["company_address"] = company.address
+        data["company_phone"] = company.phone
+        data["company_bank"] = company.bank_account
+    else:
+        data["company_name"] = "自社名未設定"
+        data["company_address"] = ""
+        data["company_phone"] = ""
+        data["company_bank"] = ""
     
     # 一時ファイルを作成
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
@@ -104,7 +128,11 @@ def generate_invoice(data: schemas.InvoiceGenerate, db: Session = Depends(get_db
         items = db.query(models.DeliveryItem).filter(models.DeliveryItem.delivery_id == d.id).all()
         for item in items:
             total_amount += item.current_price * item.quantity
+    
+    invoice_number = generate_invoice_number(data.start_date, db)
+    
     new_invoice = models.Invoice(
+        invoice_number=invoice_number,
         destination_id=data.destination_id,
         target_start_date=data.start_date,
         target_end_date=data.end_date,
@@ -117,8 +145,8 @@ def generate_invoice(data: schemas.InvoiceGenerate, db: Session = Depends(get_db
         d.invoice_id = new_invoice.id
     db.commit()
     db.refresh(new_invoice)
-    logger.info(f"請求書生成: ID={new_invoice.id}, 金額={total_amount}")
-    return {"message": "請求書を作成しました", "invoice": {"id": new_invoice.id, "total": new_invoice.total_amount}}
+    logger.info(f"請求書生成: ID={new_invoice.id}, 金額={total_amount}, 番号={invoice_number}")
+    return {"message": "請求書を作成しました", "invoice": {"id": new_invoice.id, "total": new_invoice.total_amount, "invoice_number": invoice_number}}
 
 @router.put("/{invoice_id}")
 def update_invoice(invoice_id: int, data: schemas.InvoiceUpdate, db: Session = Depends(get_db)):

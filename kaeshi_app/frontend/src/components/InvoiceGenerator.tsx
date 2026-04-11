@@ -126,8 +126,15 @@ export default function InvoiceGenerator() {
               </button>
             </div>
           </div>
-          <p style={{ fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.875rem' }}><strong style={{ fontWeight: 500 }}>請求先:</strong> {invoiceDetail.destination_name} 様</p>
-          <p style={{ fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.875rem' }}><strong style={{ fontWeight: 500 }}>請求期間:</strong> {invoiceDetail.target_start_date} 〜 {invoiceDetail.target_end_date}</p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+            <div>
+              <p style={{ fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.875rem', margin: '4px 0' }}><strong style={{ fontWeight: 500 }}>請求先:</strong> {invoiceDetail.destination_name} 様</p>
+              <p style={{ fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.875rem', margin: '4px 0' }}><strong style={{ fontWeight: 500 }}>請求期間:</strong> {invoiceDetail.target_start_date} 〜 {invoiceDetail.target_end_date}</p>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <p style={{ fontFamily: "'Noto Sans JP', sans-serif", fontWeight: 300, fontSize: '0.875rem', margin: '4px 0' }}><strong style={{ fontWeight: 500 }}>請求書番号:</strong> {invoiceDetail.invoice_number || '---'}</p>
+            </div>
+          </div>
           <div className="k-table-wrapper">
             <table className="k-table" style={{ marginTop: '1rem' }}>
               <thead><tr style={{ background: 'var(--surface-container-high)' }}>
@@ -165,7 +172,7 @@ export default function InvoiceGenerator() {
           <div className="k-table-wrapper">
             <table className="k-table">
               <thead><tr>
-                <th className="k-th">ID</th>
+                <th className="k-th">番号</th>
                 <th className="k-th">請求先</th>
                 <th className="k-th">期間</th>
                 <th className="k-th right">金額</th>
@@ -174,7 +181,7 @@ export default function InvoiceGenerator() {
               </tr></thead>
               <tbody>{invoices.map(inv => (
                 <tr key={inv.id}>
-                  <td className="k-td num">{inv.id}</td>
+                  <td className="k-td num" style={{ color: 'var(--primary-color)', fontWeight: 400 }}>{inv.invoice_number || `ID:${inv.id}`}</td>
                   <td className="k-td">{inv.destination_name}</td>
                   <td className="k-td num" style={{ fontSize: '0.8rem' }}>{inv.target_start_date}〜{inv.target_end_date}</td>
                   <td className="k-td num right" style={{ color: 'var(--primary-color)', fontWeight: 400 }}>¥{inv.total_amount?.toLocaleString()}</td>

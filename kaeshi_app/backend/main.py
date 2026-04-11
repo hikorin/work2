@@ -18,12 +18,13 @@ app.add_middleware(
     allow_headers=['*'],
 )
 
-from routers import recipe, invoice, ingredient, destination, delivery
+from routers import recipe, invoice, ingredient, destination, delivery, company
 app.include_router(ingredient.router)
 app.include_router(recipe.router)
 app.include_router(destination.router)
 app.include_router(delivery.router)
 app.include_router(invoice.router)
+app.include_router(company.router)
 
 import os
 from fastapi.staticfiles import StaticFiles

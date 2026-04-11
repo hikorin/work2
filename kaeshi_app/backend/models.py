@@ -54,8 +54,17 @@ class DeliveryItem(Base):
 class Invoice(Base):
     __tablename__ = "invoices"
     id = Column(Integer, primary_key=True, index=True)
+    invoice_number = Column(String, unique=True, index=True, nullable=True)
     destination_id = Column(Integer, ForeignKey("destinations.id"))
     target_start_date = Column(Date)
     target_end_date = Column(Date)
     total_amount = Column(Float)
     status = Column(String, default="未払い")
+
+class CompanyInfo(Base):
+    __tablename__ = "company_info"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    address = Column(String, default="")
+    phone = Column(String, default="")
+    bank_account = Column(String, default="")

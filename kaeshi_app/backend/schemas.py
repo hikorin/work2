@@ -66,3 +66,18 @@ class InvoiceGenerate(BaseModel):
 
 class InvoiceUpdate(BaseModel):
     status: Optional[str] = None
+
+class CompanyInfoBase(BaseModel):
+    name: str
+    address: str = ""
+    phone: str = ""
+    bank_account: str = ""
+
+class CompanyInfoCreate(CompanyInfoBase):
+    pass
+
+class CompanyInfo(CompanyInfoBase):
+    id: int
+
+    class Config:
+        from_attributes = True

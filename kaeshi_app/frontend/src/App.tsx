@@ -4,12 +4,14 @@ import IngredientsManager from './components/IngredientsManager';
 import RecipeEditor from './components/RecipeEditor';
 import DeliveryManager from './components/DeliveryManager';
 import InvoiceGenerator from './components/InvoiceGenerator';
+import SettingsManager from './components/SettingsManager';
 
 const tabs = [
   { key: 'master', label: 'マスター管理', icon: 'inventory_2' },
   { key: 'recipes', label: 'レシピ原価', icon: 'restaurant_menu' },
   { key: 'deliveries', label: '納品管理', icon: 'local_shipping' },
   { key: 'invoices', label: '請求書', icon: 'description' },
+  { key: 'settings', label: '設定', icon: 'settings' },
 ];
 
 function App() {
@@ -42,6 +44,7 @@ function App() {
         {activeTab === 'recipes' && <RecipeEditor />}
         {activeTab === 'deliveries' && <DeliveryManager />}
         {activeTab === 'invoices' && <InvoiceGenerator />}
+        {activeTab === 'settings' && <SettingsManager />}
       </main>
 
       {/* Bottom Navigation (Mobile First) */}

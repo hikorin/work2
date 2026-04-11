@@ -133,6 +133,14 @@ def get_delivery_pdf(delivery_id: int, db: Session = Depends(get_db)):
     dest = db.query(models.Destination).filter(models.Destination.id == delivery.destination_id).first()
     items = db.query(models.DeliveryItem).filter(models.DeliveryItem.delivery_id == delivery.id).all()
     
+    # 自社情報を取得
+    company = db.query(models.CompanyInfo).first()
+    company_data = {
+        "name": company.name if company else "自社名未設定",
+        "address": company.address if company else "",
+        "phone": company.phone if company else ""
+    }
+    
     item_list = []
     for item in items:
         recipe = db.query(models.Recipe).filter(models.Recipe.id == item.recipe_id).first()
@@ -147,7 +155,8 @@ def get_delivery_pdf(delivery_id: int, db: Session = Depends(get_db)):
         "delivery_number": delivery.delivery_number,
         "delivery_date": str(delivery.delivery_date),
         "destination_name": dest.name if dest else "不明",
-        "items": item_list
+        "items": item_list,
+        "company": company_data
     }
     
     # 一時ファイルを作成
